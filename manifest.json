@@ -2,7 +2,7 @@
   "name": "planner",
   "short_name": "planner",
   "description": "planner with calendar and todo list",
-  "start_url": "/",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#FDFBF7",
   "theme_color": "#FDFBF7",
