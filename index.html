@@ -3,26 +3,21 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    
-    <!-- ===== ЭТО ДОБАВИТЬ ДЛЯ IPHONE ===== -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="planner" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="theme-color" content="#FDFBF7" />
-    
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>" />
     <link rel="manifest" href="manifest.json" />
-<title>planner</title>
+    <title>planner</title>
     <style>
-        /* ===== ОБЩИЕ СТИЛИ ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
-
         body {
             font-family: 'Times New Roman', Georgia, serif;
             background: #FDFBF7;
@@ -33,7 +28,6 @@
             padding: 0;
             margin: 0;
         }
-
         .app {
             width: 390px;
             max-width: 390px;
@@ -45,8 +39,6 @@
             min-height: 100vh;
             margin: 0 auto;
         }
-
-        /* ===== ОБЩИЕ ТАБЛИЦЫ ===== */
         .table {
             display: grid;
             border: 1px solid #E35D3B;
@@ -55,8 +47,6 @@
             margin-left: 0;
             margin-right: 0;
         }
-
-        /* Убираем двойные линии */
         .table .cell {
             border: none;
             border-right: 1px solid #E35D3B;
@@ -72,59 +62,39 @@
             padding: 0;
             box-sizing: border-box;
         }
-
-        /* Убираем правую границу у последней колонки */
         .table .cell:last-child {
             border-right: none;
         }
-
-        /* Убираем нижнюю границу у последней строки */
         .table .row-last .cell {
             border-bottom: none;
         }
-
-        /* Внешние отступы */
         .page-content {
             padding: 0 10px;
         }
-
         .table-wrap {
             margin-bottom: 10px;
         }
-
         .table-wrap:last-child {
             margin-bottom: 0;
         }
-
         .cell.clickable {
             cursor: pointer;
         }
-
         .cell.clickable:active {
             opacity: 0.6;
         }
-
-        /* ===== СТРАНИЦЫ ===== */
         .page {
             display: none;
             flex: 1;
             flex-direction: column;
             padding: 10px 0 0;
         }
-
         .page.active {
             display: flex;
         }
-
         .page-content {
             flex: 1;
         }
-
-        /* ============================================================
-           MONTH VIEW
-           ============================================================ */
-
-        /* Таблица 1: Шапка месяца */
         .month-header {
             display: grid;
             grid-template-columns: 80px 230px 80px;
@@ -132,7 +102,6 @@
             width: 100%;
             background: #FDFBF7;
         }
-
         .month-header .cell {
             height: 55px;
             border: none;
@@ -142,30 +111,23 @@
             background: #FDFBF7;
             padding: 0 10px;
         }
-
         .month-header .cell:last-child {
             border-right: none;
         }
-
         .month-header .cell:first-child {
             justify-content: flex-start;
             padding-left: 12px;
         }
-
         .month-header .cell:last-child {
             justify-content: flex-end;
             padding-right: 12px;
         }
-
         .month-header .cell.month-clickable {
             cursor: pointer;
         }
-
         .month-header .cell.month-clickable:active {
             opacity: 0.6;
         }
-
-        /* Таблица 2: Дни недели */
         .month-weekdays {
             display: grid;
             grid-template-columns: repeat(7, 55px);
@@ -173,7 +135,6 @@
             width: 100%;
             background: #FDFBF7;
         }
-
         .month-weekdays .cell {
             height: 45px;
             border: none;
@@ -183,12 +144,9 @@
             letter-spacing: 0.3px;
             background: #FDFBF7;
         }
-
         .month-weekdays .cell:last-child {
             border-right: none;
         }
-
-        /* Таблица 3: Календарная сетка 6x7 */
         .month-calendar {
             display: grid;
             grid-template-columns: repeat(7, 55px);
@@ -196,7 +154,6 @@
             width: 100%;
             background: #FDFBF7;
         }
-
         .month-calendar .cell {
             height: 70px;
             border: none;
@@ -211,46 +168,36 @@
             background: #FDFBF7;
             cursor: pointer;
         }
-
         .month-calendar .cell:nth-child(7n) {
             border-right: none;
         }
-
-        /* Последняя строка не имеет нижней границы (проставляется динамически в JS) */
         .month-calendar .cell.last-row {
             border-bottom: none;
         }
-
         .month-calendar .cell:active {
             opacity: 0.6;
         }
-
         .month-calendar .cell .day-number {
             font-size: 13px;
             font-family: 'Times New Roman', Georgia, serif;
             color: #2A4B46;
             margin-bottom: 2px;
         }
-
         .month-calendar .cell .stars-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 1px;
             width: 100%;
         }
-
         .month-calendar .cell .stars-grid .star {
             font-size: 10px;
             color: #2A4B46;
             text-align: center;
             line-height: 1.2;
         }
-
         .month-calendar .cell .stars-grid .star.empty {
             opacity: 0.2;
         }
-
-        /* Таблица 4: Нижний блок */
         .month-detail {
             display: grid;
             grid-template-columns: 90px 200px 50px 50px;
@@ -258,7 +205,6 @@
             width: 100%;
             background: #FDFBF7;
         }
-
         .month-detail .cell {
             border: none;
             border-right: 1px solid #E35D3B;
@@ -268,36 +214,29 @@
             background: #FDFBF7;
             min-height: 70px;
         }
-
         .month-detail .cell:last-child {
             border-right: none;
         }
-
-        /* Строка 1: детали дня */
         .month-detail .row-detail .cell {
             height: 140px;
             align-items: center;
             justify-content: center;
             flex-direction: column;
         }
-
         .month-detail .row-detail .cell:first-child {
             justify-content: center;
             align-items: center;
         }
-
         .month-detail .row-detail .cell:nth-child(2) {
             align-items: flex-start;
             justify-content: flex-start;
             padding: 10px;
         }
-
         .month-detail .row-detail .cell:nth-child(4) {
             justify-content: center;
             align-items: center;
             padding: 0;
         }
-
         .month-detail .date-wrapper {
             display: flex;
             flex-direction: column;
@@ -306,30 +245,25 @@
             height: 100%;
             width: 100%;
         }
-
         .month-detail .date-wrapper .date-small-top {
             font-size: 12px;
             color: #2A4B46;
         }
-
         .month-detail .date-wrapper .date-large {
             font-size: 40px;
             line-height: 1.1;
             color: #2A4B46;
         }
-
         .month-detail .date-wrapper .date-small-bottom {
             font-size: 12px;
             color: #2A4B46;
         }
-
         .month-detail .task-list {
             font-size: 11px;
             color: #2A4B46;
             line-height: 1.6;
             width: 100%;
         }
-
         .month-detail .task-list .task-item {
             display: block;
             font-size: 11px;
@@ -338,11 +272,9 @@
             text-overflow: ellipsis;
             cursor: pointer;
         }
-
         .month-detail .task-list .task-item:active {
             opacity: 0.6;
         }
-
         .month-detail .add-task-btn {
             font-size: 28px;
             cursor: pointer;
@@ -354,22 +286,17 @@
             border: none;
             font-family: 'Times New Roman', Georgia, serif;
         }
-
         .month-detail .add-task-btn:active {
             opacity: 0.6;
         }
-
         .month-detail .empty-tasks {
             font-size: 11px;
             color: #2A4B46;
             opacity: 0.4;
         }
-
-        /* Строка 2: навигация внутри month-detail */
         .month-detail .row-nav {
             border-top: 1px solid #E35D3B;
         }
-
         .month-detail .row-nav .cell {
             height: 55px;
             border: none;
@@ -380,25 +307,16 @@
             cursor: pointer;
             padding: 0;
         }
-
         .month-detail .row-nav .cell:last-child {
             border-right: none;
         }
-
         .month-detail .row-nav .cell:active {
             opacity: 0.6;
         }
-
         .month-detail .row-nav .cell.active-nav {
             background: #2A4B46;
             color: #FDFBF7;
         }
-
-        /* ============================================================
-           WEEK VIEW
-           ============================================================ */
-
-        /* Таблица 1: Шапка недели */
         .week-header {
             display: grid;
             grid-template-columns: 58px 58px 214px 60px;
@@ -406,7 +324,6 @@
             width: 100%;
             background: #FDFBF7;
         }
-
         .week-header .cell {
             height: 50px;
             border: none;
@@ -416,20 +333,15 @@
             background: #FDFBF7;
             padding: 5px;
         }
-
         .week-header .cell:last-child {
             border-right: none;
         }
-
         .week-header .cell.clickable {
             cursor: pointer;
         }
-
         .week-header .cell.clickable:active {
             opacity: 0.6;
         }
-
-        /* Таблица 2: Недельная сетка 7x3 */
         .week-grid {
             display: grid;
             grid-template-columns: 50px 280px 60px;
@@ -437,7 +349,6 @@
             width: 100%;
             background: #FDFBF7;
         }
-
         .week-grid .cell {
             height: 70px;
             border: none;
@@ -450,38 +361,30 @@
             justify-content: center;
             flex-direction: column;
         }
-
         .week-grid .cell:nth-child(3n) {
             border-right: none;
         }
-
-        /* Последняя строка не имеет нижней границы */
         .week-grid .cell:nth-child(n+19) {
             border-bottom: none;
         }
-
         .week-grid .cell:first-child {
             align-items: center;
             justify-content: center;
         }
-
         .week-grid .cell:last-child {
             align-items: center;
             justify-content: center;
         }
-
         .week-grid .cell:nth-child(3n-1) {
             align-items: flex-start;
             justify-content: flex-start;
             padding: 4px 6px 4px 15px;
         }
-
         .week-grid .cell .day-number-large {
             font-size: 22px;
             font-family: 'Times New Roman', Georgia, serif;
             color: #2A4B46;
         }
-
         .week-grid .cell .week-tasks {
             font-size: 10px;
             color: #2A4B46;
@@ -493,7 +396,6 @@
             align-items: flex-start;
             justify-content: flex-start;
         }
-
         .week-grid .cell .week-tasks .task-item {
             font-size: 10px;
             white-space: nowrap;
@@ -501,26 +403,20 @@
             text-overflow: ellipsis;
             max-width: 48%;
         }
-
         .week-grid .cell .week-tasks .task-item.left {
             text-align: left;
         }
-
         .week-grid .cell .week-tasks .task-item.right {
             text-align: left;
         }
-
         .week-grid .cell .week-tasks .task-item.empty {
             opacity: 0.3;
         }
-
         .week-grid .cell .day-letter-large {
             font-size: 28px;
             font-family: 'Times New Roman', Georgia, serif;
             color: #2A4B46;
         }
-
-        /* Таблица 3: Нижняя навигация (общая для всех) */
         .bottom-nav {
             display: grid;
             grid-template-columns: 97px 97px 97px 97px;
@@ -529,7 +425,6 @@
             background: #FDFBF7;
             margin-top: auto;
         }
-
         .bottom-nav .cell {
             height: 50px;
             border: none;
@@ -541,25 +436,16 @@
             cursor: pointer;
             padding: 5px;
         }
-
         .bottom-nav .cell:last-child {
             border-right: none;
         }
-
         .bottom-nav .cell:active {
             opacity: 0.6;
         }
-
         .bottom-nav .cell.active-nav {
             background: #2A4B46;
             color: #FDFBF7;
         }
-
-        /* ============================================================
-           DAY VIEW
-           ============================================================ */
-
-        /* Таблица 1: Шапка дня */
         .day-header {
             display: grid;
             grid-template-columns: 58px 195px 137px;
@@ -567,7 +453,6 @@
             width: 100%;
             background: #FDFBF7;
         }
-
         .day-header .cell {
             height: 50px;
             border: none;
@@ -577,20 +462,15 @@
             background: #FDFBF7;
             padding: 5px;
         }
-
         .day-header .cell:last-child {
             border-right: none;
         }
-
         .day-header .cell.clickable {
             cursor: pointer;
         }
-
         .day-header .cell.clickable:active {
             opacity: 0.6;
         }
-
-        /* Таблица 2: Расписание */
         .day-schedule {
             display: grid;
             grid-template-columns: 55px 335px;
@@ -599,7 +479,6 @@
             background: #FDFBF7;
             min-height: 450px;
         }
-
         .day-schedule .cell {
             border: none;
             border-right: 1px solid #E35D3B;
@@ -611,20 +490,17 @@
             flex-direction: column;
             min-height: 450px;
         }
-
         .day-schedule .cell:last-child {
             border-right: none;
             align-items: flex-start;
             justify-content: flex-start;
             padding: 15px 6px 15px 15px;
         }
-
         .day-schedule .cell .time-label {
             font-size: 16px;
             color: #2A4B46;
             font-family: 'Times New Roman', Georgia, serif;
         }
-
         .day-schedule .cell .task-text {
             font-size: 16px;
             color: #2A4B46;
@@ -632,22 +508,17 @@
             font-family: 'Times New Roman', Georgia, serif;
             width: 100%;
         }
-
         .day-schedule .cell .task-text .task-line {
             display: block;
             font-size: 16px;
             cursor: pointer;
         }
-
         .day-schedule .cell .task-text .task-line:active {
             opacity: 0.6;
         }
-
         .day-schedule .cell .task-text .empty-text {
             opacity: 0.4;
         }
-
-        /* Таблица 3: Добавление задачи */
         .day-add-task {
             display: grid;
             grid-template-columns: 55px 280px 55px;
@@ -655,7 +526,6 @@
             width: 100%;
             background: #FDFBF7;
         }
-
         .day-add-task .cell {
             height: 55px;
             border: none;
@@ -666,39 +536,28 @@
             cursor: pointer;
             padding: 0;
         }
-
         .day-add-task .cell:last-child {
             border-right: none;
         }
-
         .day-add-task .cell:first-child {
             align-items: center;
             justify-content: center;
         }
-
         .day-add-task .cell:nth-child(2) {
             align-items: center;
             justify-content: flex-start;
             padding-left: 12px;
         }
-
         .day-add-task .cell:last-child {
             align-items: center;
             justify-content: center;
         }
-
         .day-add-task .cell:active {
             opacity: 0.6;
         }
-
         .day-add-task .cell .add-icon {
             font-size: 28px;
         }
-
-        /* ============================================================
-           ВЫПАДАЮЩИЕ СПИСКИ
-           ============================================================ */
-
         .dropdown-content {
             display: none;
             position: fixed;
@@ -710,11 +569,9 @@
             max-height: 200px;
             overflow-y: auto;
         }
-
         .dropdown-content.show {
             display: block;
         }
-
         .dropdown-content .dropdown-item {
             padding: 10px 16px;
             font-family: 'Times New Roman', Georgia, serif;
@@ -724,19 +581,12 @@
             border-bottom: 1px solid #E35D3B;
             background: #FDFBF7;
         }
-
         .dropdown-content .dropdown-item:last-child {
             border-bottom: none;
         }
-
         .dropdown-content .dropdown-item:active {
             opacity: 0.6;
         }
-
-        /* ============================================================
-           МОДАЛЬНОЕ ОКНО
-           ============================================================ */
-
         .modal-overlay {
             display: none;
             position: fixed;
@@ -750,11 +600,9 @@
             align-items: center;
             padding: 20px;
         }
-
         .modal-overlay.show {
             display: flex;
         }
-
         .modal {
             background: #FDFBF7;
             border: 1px solid #E35D3B;
@@ -763,7 +611,6 @@
             padding: 24px 20px;
             font-family: 'Times New Roman', Georgia, serif;
         }
-
         .modal h3 {
             color: #2A4B46;
             font-size: 22px;
@@ -771,7 +618,6 @@
             font-family: 'Times New Roman', Georgia, serif;
             font-weight: normal;
         }
-
         .modal input {
             width: 100%;
             padding: 12px 14px;
@@ -783,22 +629,18 @@
             margin-bottom: 12px;
             outline: none;
         }
-
         .modal input:focus {
             border-color: #2A4B46;
         }
-
         .modal input::placeholder {
             color: #2A4B46;
             opacity: 0.5;
         }
-
         .modal .modal-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
-
         .modal .modal-buttons button {
             padding: 12px;
             font-size: 16px;
@@ -808,28 +650,21 @@
             color: #2A4B46;
             cursor: pointer;
         }
-
         .modal .modal-buttons button:active {
             opacity: 0.6;
         }
-
         .modal .modal-buttons button.primary {
             background: #2A4B46;
             color: #FDFBF7;
         }
-
-        /* ===== СКРЫТЫЕ ЭЛЕМЕНТЫ ===== */
         #modalTaskTime {
             display: none;
         }
-
-        /* ===== АДАПТИВ ===== */
         @media (max-width: 390px) {
             .app {
                 width: 100%;
                 max-width: 100%;
             }
-            /* Пересчет размеров для маленьких экранов */
             .month-header {
                 grid-template-columns: 20% 60% 20%;
             }
@@ -861,11 +696,9 @@
                 grid-template-columns: 14% 72% 14%;
             }
         }
-
         *:focus {
             outline: none;
         }
-
         ::-webkit-scrollbar {
             width: 0;
             height: 0;
@@ -875,10 +708,8 @@
 <body>
 
 <div class="app">
-    <!-- ==================== MONTH PAGE ==================== -->
     <div class="page active" id="monthPage">
         <div class="page-content">
-            <!-- Таблица 1: Шапка месяца -->
             <div class="table-wrap">
                 <div class="month-header table">
                     <div class="cell month-clickable" id="monthTitle">JULY</div>
@@ -886,25 +717,14 @@
                     <div class="cell"></div>
                 </div>
             </div>
-
-            <!-- Таблица 2: Дни недели -->
             <div class="table-wrap">
-                <div class="month-weekdays table" id="monthWeekdays">
-                    <!-- Заполняется JS -->
-                </div>
+                <div class="month-weekdays table" id="monthWeekdays"></div>
             </div>
-
-            <!-- Таблица 3: Календарная сетка -->
             <div class="table-wrap">
-                <div class="month-calendar table" id="monthCalendar">
-                    <!-- Заполняется JS -->
-                </div>
+                <div class="month-calendar table" id="monthCalendar"></div>
             </div>
-
-            <!-- Таблица 4: Нижний блок -->
             <div class="table-wrap">
                 <div class="month-detail table" id="monthDetail">
-                    <!-- Строка 1: детали дня -->
                     <div class="row-detail" style="display:contents;">
                         <div class="cell" id="detailDate">
                             <div class="date-wrapper">
@@ -925,7 +745,6 @@
                             <button class="add-task-btn" id="addTaskMonthBtn">+</button>
                         </div>
                     </div>
-                    <!-- Строка 2: навигация -->
                     <div class="row-nav" style="display:contents;">
                         <div class="cell active-nav" data-nav="month">MONTH</div>
                         <div class="cell" data-nav="day">DAY</div>
@@ -937,10 +756,8 @@
         </div>
     </div>
 
-    <!-- ==================== WEEK PAGE ==================== -->
     <div class="page" id="weekPage">
         <div class="page-content">
-            <!-- Таблица 1: Шапка недели -->
             <div class="table-wrap">
                 <div class="week-header table">
                     <div class="cell clickable" id="weekStart">13</div>
@@ -949,16 +766,10 @@
                     <div class="cell"></div>
                 </div>
             </div>
-
-            <!-- Таблица 2: Недельная сетка -->
             <div class="table-wrap">
-                <div class="week-grid table" id="weekGrid">
-                    <!-- Заполняется JS -->
-                </div>
+                <div class="week-grid table" id="weekGrid"></div>
             </div>
         </div>
-
-        <!-- Таблица 3: Нижняя навигация -->
         <div class="bottom-nav table">
             <div class="cell" data-nav="month">MONTH</div>
             <div class="cell" data-nav="day">DAY</div>
@@ -967,10 +778,8 @@
         </div>
     </div>
 
-    <!-- ==================== DAY PAGE ==================== -->
     <div class="page" id="dayPage">
         <div class="page-content">
-            <!-- Таблица 1: Шапка дня -->
             <div class="table-wrap">
                 <div class="day-header table">
                     <div class="cell clickable" id="dayNumber">16</div>
@@ -978,8 +787,6 @@
                     <div class="cell clickable" id="dayWeekday">THURSDAY</div>
                 </div>
             </div>
-
-            <!-- Таблица 2: Расписание -->
             <div class="table-wrap">
                 <div class="day-schedule table">
                     <div class="cell">
@@ -994,8 +801,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Таблица 3: Добавление задачи -->
             <div class="table-wrap">
                 <div class="day-add-task table">
                     <div class="cell" id="dayAddTime">00:00</div>
@@ -1006,8 +811,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Таблица 4: Нижняя навигация -->
         <div class="bottom-nav table">
             <div class="cell" data-nav="month">MONTH</div>
             <div class="cell active-nav" data-nav="day">DAY</div>
@@ -1017,7 +820,6 @@
     </div>
 </div>
 
-<!-- ===== МОДАЛЬНОЕ ОКНО ===== -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
         <h3>Новая задача</h3>
@@ -1090,7 +892,6 @@
     // ============================================================
 
     function renderMonth() {
-        // Дни недели
         const weekdaysContainer = document.getElementById('monthWeekdays');
         weekdaysContainer.innerHTML = '';
         weekdays.forEach(day => {
@@ -1100,7 +901,6 @@
             weekdaysContainer.appendChild(cell);
         });
 
-        // Календарная сетка
         const container = document.getElementById('monthCalendar');
         container.innerHTML = '';
 
@@ -1113,14 +913,12 @@
         document.getElementById('monthTitle').textContent = monthNamesFull[currentMonth];
         document.getElementById('yearTitle').textContent = currentYear;
 
-        // Пустые ячейки в начале
         for (let i = 0; i < offset; i++) {
             const cell = document.createElement('div');
             cell.className = 'cell';
             container.appendChild(cell);
         }
 
-        // Дни
         for (let d = 1; d <= daysInMonth; d++) {
             const cell = document.createElement('div');
             cell.className = 'cell';
@@ -1154,8 +952,6 @@
             container.appendChild(cell);
         }
 
-        // Пустые ячейки в конце, чтобы сетка всегда была кратна 7
-        // (иначе последняя строка "рвётся" и границы съезжают)
         const totalCells = offset + daysInMonth;
         const trailing = (7 - (totalCells % 7)) % 7;
         for (let i = 0; i < trailing; i++) {
@@ -1164,8 +960,6 @@
             container.appendChild(cell);
         }
 
-        // Убираем нижнюю границу у последней реальной строки (динамически,
-        // а не по жёстко зашитому nth-child, т.к. число строк меняется от месяца к месяцу)
         const allCells = container.children;
         for (let i = Math.max(0, allCells.length - 7); i < allCells.length; i++) {
             allCells[i].classList.add('last-row');
@@ -1267,13 +1061,11 @@
             const dayLetter = weekdays[i][0];
             const tasksForDay = getTasksForDate(date);
 
-            // Число
             const cell1 = document.createElement('div');
             cell1.className = 'cell';
             cell1.innerHTML = `<span class="day-number-large">${dayNum}</span>`;
             grid.appendChild(cell1);
 
-            // Задачи
             const cell2 = document.createElement('div');
             cell2.className = 'cell';
             const tasksDiv = document.createElement('div');
@@ -1315,7 +1107,6 @@
             cell2.appendChild(tasksDiv);
             grid.appendChild(cell2);
 
-            // Буква дня
             const cell3 = document.createElement('div');
             cell3.className = 'cell';
             cell3.innerHTML = `<span class="day-letter-large">${dayLetter}</span>`;
@@ -1651,7 +1442,6 @@
     renderDay();
 
     console.log('Приложение загружено!');
-
 </script>
 
 </body>
