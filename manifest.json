@@ -1,17 +1,11 @@
 {
-  "name": "planner",
-  "short_name": "planner",
-  "description": "planner with calendar and todo list",
-  "start_url": "index.html",
+  "name": "Planner",
+  "short_name": "Planner",
+  "description": "Planner with calendar and todo list",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#FDFBF7",
   "theme_color": "#FDFBF7",
-  "orientation": "portrait",
-  "icons": [
-    {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>",
-      "sizes": "any",
-      "type": "image/svg+xml"
-    }
-  ]
+  "orientation": "portrait"
 }
