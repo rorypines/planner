@@ -65,9 +65,6 @@
         .table .cell:last-child {
             border-right: none;
         }
-        .table .row-last .cell {
-            border-bottom: none;
-        }
         .page-content {
             padding: 0 10px;
         }
@@ -563,7 +560,7 @@
             position: fixed;
             background: #FDFBF7;
             min-width: 100px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             z-index: 9999;
             border: 1px solid #E35D3B;
             max-height: 200px;
@@ -594,7 +591,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0,0,0,0.3);
             z-index: 10000;
             justify-content: center;
             align-items: center;
@@ -661,53 +658,26 @@
             display: none;
         }
         @media (max-width: 390px) {
-            .app {
-                width: 100%;
-                max-width: 100%;
-            }
-            .month-header {
-                grid-template-columns: 20% 60% 20%;
-            }
-            .month-weekdays {
-                grid-template-columns: repeat(7, 1fr);
-            }
-            .month-calendar {
-                grid-template-columns: repeat(7, 1fr);
-            }
-            .month-detail {
-                grid-template-columns: 23% 50% 13.5% 13.5%;
-            }
-            .week-header {
-                grid-template-columns: 15% 15% 55% 15%;
-            }
-            .week-grid {
-                grid-template-columns: 13% 72% 15%;
-            }
-            .bottom-nav {
-                grid-template-columns: 1fr 1fr 1fr 1fr;
-            }
-            .day-header {
-                grid-template-columns: 15% 50% 35%;
-            }
-            .day-schedule {
-                grid-template-columns: 14% 86%;
-            }
-            .day-add-task {
-                grid-template-columns: 14% 72% 14%;
-            }
+            .app { width: 100%; max-width: 100%; }
+            .month-header { grid-template-columns: 20% 60% 20%; }
+            .month-weekdays { grid-template-columns: repeat(7, 1fr); }
+            .month-calendar { grid-template-columns: repeat(7, 1fr); }
+            .month-detail { grid-template-columns: 23% 50% 13.5% 13.5%; }
+            .week-header { grid-template-columns: 15% 15% 55% 15%; }
+            .week-grid { grid-template-columns: 13% 72% 15%; }
+            .bottom-nav { grid-template-columns: 1fr 1fr 1fr 1fr; }
+            .day-header { grid-template-columns: 15% 50% 35%; }
+            .day-schedule { grid-template-columns: 14% 86%; }
+            .day-add-task { grid-template-columns: 14% 72% 14%; }
         }
-        *:focus {
-            outline: none;
-        }
-        ::-webkit-scrollbar {
-            width: 0;
-            height: 0;
-        }
+        *:focus { outline: none; }
+        ::-webkit-scrollbar { width: 0; height: 0; }
     </style>
 </head>
 <body>
 
 <div class="app">
+    <!-- MONTH -->
     <div class="page active" id="monthPage">
         <div class="page-content">
             <div class="table-wrap">
@@ -756,6 +726,7 @@
         </div>
     </div>
 
+    <!-- WEEK -->
     <div class="page" id="weekPage">
         <div class="page-content">
             <div class="table-wrap">
@@ -778,6 +749,7 @@
         </div>
     </div>
 
+    <!-- DAY -->
     <div class="page" id="dayPage">
         <div class="page-content">
             <div class="table-wrap">
@@ -820,66 +792,61 @@
     </div>
 </div>
 
+<!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
-        <h3>Новая задача</h3>
-        <input type="text" id="modalTaskText" placeholder="Название задачи..." />
+        <h3>New Task</h3>
+        <input type="text" id="modalTaskText" placeholder="Task name..." />
         <input type="time" id="modalTaskTime" value="12:00" />
         <div class="modal-buttons">
-            <button id="modalCancel">Отмена</button>
-            <button class="primary" id="modalSave">Добавить</button>
+            <button id="modalCancel">Cancel</button>
+            <button class="primary" id="modalSave">Add</button>
         </div>
     </div>
 </div>
 
 <script>
     // ============================================================
-    //  ДАННЫЕ
+    // DATA
     // ============================================================
 
     let tasks = JSON.parse(localStorage.getItem('plannerTasks')) || {};
-
     let currentMonth = 6;
     let currentYear = 2026;
     let selectedDay = new Date(2026, 6, 16);
     let currentDay = new Date(2026, 6, 16);
     let weekStart = new Date(2026, 6, 13);
 
-    const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-    const monthNamesFull = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
-    const weekdays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-    const weekdaysFull = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
-
-    // ============================================================
-    //  РАБОТА С ДАННЫМИ
-    // ============================================================
+    const monthNames = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    const monthNamesFull = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+    const weekdays = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
+    const weekdaysFull = ['MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY','SUNDAY'];
 
     function saveTasks() {
         localStorage.setItem('plannerTasks', JSON.stringify(tasks));
     }
 
     function getDateKey(date) {
-        const y = date.getFullYear();
-        const m = String(date.getMonth() + 1).padStart(2, '0');
-        const d = String(date.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
+        let y = date.getFullYear();
+        let m = String(date.getMonth()+1).padStart(2,'0');
+        let d = String(date.getDate()).padStart(2,'0');
+        return y+'-'+m+'-'+d;
     }
 
     function getTasksForDate(date) {
-        const key = getDateKey(date);
-        return tasks[key] || [];
+        return tasks[getDateKey(date)] || [];
     }
 
-    function addTaskForDate(date, text, time = null) {
-        const key = getDateKey(date);
+    function addTaskForDate(date, text, time) {
+        let key = getDateKey(date);
         if (!tasks[key]) tasks[key] = [];
-        const fullText = time ? `${time} ${text}` : text;
-        tasks[key].push(fullText);
+        let full = time ? time+' '+text : text;
+        tasks[key].push(full);
         saveTasks();
     }
 
     function removeTaskForDate(date, index) {
-        const key = getDateKey(date);
+        let key = getDateKey(date);
         if (tasks[key] && tasks[key][index] !== undefined) {
             tasks[key].splice(index, 1);
             if (tasks[key].length === 0) delete tasks[key];
@@ -888,81 +855,76 @@
     }
 
     // ============================================================
-    //  MONTH VIEW
+    // RENDER MONTH
     // ============================================================
 
     function renderMonth() {
-        const weekdaysContainer = document.getElementById('monthWeekdays');
-        weekdaysContainer.innerHTML = '';
-        weekdays.forEach(day => {
-            const cell = document.createElement('div');
-            cell.className = 'cell';
-            cell.textContent = day;
-            weekdaysContainer.appendChild(cell);
+        let wd = document.getElementById('monthWeekdays');
+        wd.innerHTML = '';
+        weekdays.forEach(d => {
+            let c = document.createElement('div');
+            c.className = 'cell';
+            c.textContent = d;
+            wd.appendChild(c);
         });
 
-        const container = document.getElementById('monthCalendar');
-        container.innerHTML = '';
+        let grid = document.getElementById('monthCalendar');
+        grid.innerHTML = '';
 
-        const firstDay = new Date(currentYear, currentMonth, 1);
-        const lastDay = new Date(currentYear, currentMonth + 1, 0);
-        const daysInMonth = lastDay.getDate();
-        const startDayOfWeek = firstDay.getDay();
-        const offset = (startDayOfWeek === 0) ? 6 : startDayOfWeek - 1;
+        let first = new Date(currentYear, currentMonth, 1);
+        let last = new Date(currentYear, currentMonth+1, 0);
+        let daysInMonth = last.getDate();
+        let offset = (first.getDay() === 0) ? 6 : first.getDay() - 1;
 
         document.getElementById('monthTitle').textContent = monthNamesFull[currentMonth];
         document.getElementById('yearTitle').textContent = currentYear;
 
-        for (let i = 0; i < offset; i++) {
-            const cell = document.createElement('div');
-            cell.className = 'cell';
-            container.appendChild(cell);
+        for (let i=0; i<offset; i++) {
+            let c = document.createElement('div');
+            c.className = 'cell';
+            grid.appendChild(c);
         }
 
-        for (let d = 1; d <= daysInMonth; d++) {
-            const cell = document.createElement('div');
-            cell.className = 'cell';
-            const dateObj = new Date(currentYear, currentMonth, d);
-            const tasksForDay = getTasksForDate(dateObj);
-
-            const numSpan = document.createElement('span');
-            numSpan.className = 'day-number';
-            numSpan.textContent = d;
-            cell.appendChild(numSpan);
-
-            if (tasksForDay.length > 0) {
-                const starsGrid = document.createElement('div');
-                starsGrid.className = 'stars-grid';
-                const maxStars = Math.min(tasksForDay.length, 9);
-                for (let i = 0; i < 9; i++) {
-                    const star = document.createElement('span');
-                    star.className = 'star' + (i < maxStars ? '' : ' empty');
-                    star.textContent = i < maxStars ? '★' : '☆';
-                    starsGrid.appendChild(star);
+        for (let d=1; d<=daysInMonth; d++) {
+            let c = document.createElement('div');
+            c.className = 'cell';
+            let dateObj = new Date(currentYear, currentMonth, d);
+            let t = getTasksForDate(dateObj);
+            let num = document.createElement('span');
+            num.className = 'day-number';
+            num.textContent = d;
+            c.appendChild(num);
+            if (t.length > 0) {
+                let stars = document.createElement('div');
+                stars.className = 'stars-grid';
+                let max = Math.min(t.length, 9);
+                for (let i=0; i<9; i++) {
+                    let s = document.createElement('span');
+                    s.className = 'star' + (i<max ? '' : ' empty');
+                    s.textContent = i<max ? '★' : '☆';
+                    stars.appendChild(s);
                 }
-                cell.appendChild(starsGrid);
+                c.appendChild(stars);
             }
-
-            cell.dataset.date = getDateKey(dateObj);
-            cell.addEventListener('click', () => {
+            c.dataset.date = getDateKey(dateObj);
+            c.addEventListener('click', function() {
                 selectedDay = new Date(currentYear, currentMonth, d);
                 updateDayDetail();
             });
-
-            container.appendChild(cell);
+            grid.appendChild(c);
         }
 
-        const totalCells = offset + daysInMonth;
-        const trailing = (7 - (totalCells % 7)) % 7;
-        for (let i = 0; i < trailing; i++) {
-            const cell = document.createElement('div');
-            cell.className = 'cell';
-            container.appendChild(cell);
+        let total = offset + daysInMonth;
+        let trailing = (7 - (total%7)) % 7;
+        for (let i=0; i<trailing; i++) {
+            let c = document.createElement('div');
+            c.className = 'cell';
+            grid.appendChild(c);
         }
 
-        const allCells = container.children;
-        for (let i = Math.max(0, allCells.length - 7); i < allCells.length; i++) {
-            allCells[i].classList.add('last-row');
+        let cells = grid.children;
+        for (let i=Math.max(0, cells.length-7); i<cells.length; i++) {
+            cells[i].classList.add('last-row');
         }
 
         updateDayDetail();
@@ -970,260 +932,216 @@
     }
 
     function updateDayDetail() {
-        const date = selectedDay;
-        const day = date.getDate();
-        const month = monthNames[date.getMonth()];
-        const year = date.getFullYear();
+        let date = selectedDay;
+        let day = date.getDate();
+        let month = monthNames[date.getMonth()];
+        let year = date.getFullYear();
 
-        const wrapper = document.querySelector('#detailDate .date-wrapper');
+        let wrapper = document.querySelector('#detailDate .date-wrapper');
         wrapper.querySelector('.date-small-top').textContent = month;
         wrapper.querySelector('.date-large').textContent = day;
         wrapper.querySelector('.date-small-bottom').textContent = year;
 
-        const tasksForDay = getTasksForDate(date);
-        const taskListDiv = document.getElementById('detailTasks');
-        const listContainer = taskListDiv.querySelector('.task-list');
-
-        if (tasksForDay.length === 0) {
-            listContainer.innerHTML = '<span class="empty-tasks">Нет задач</span>';
+        let t = getTasksForDate(date);
+        let list = document.querySelector('#detailTasks .task-list');
+        if (t.length === 0) {
+            list.innerHTML = '<span class="empty-tasks">No tasks</span>';
         } else {
-            listContainer.innerHTML = '';
-            tasksForDay.forEach((task, idx) => {
-                let displayText = task;
-                if (displayText.match(/^\d{2}:\d{2}\s/)) {
-                    displayText = displayText.replace(/^\d{2}:\d{2}\s/, '');
-                }
-                const span = document.createElement('span');
+            list.innerHTML = '';
+            t.forEach((task, idx) => {
+                let display = task.replace(/^\d{2}:\d{2}\s/, '');
+                let span = document.createElement('span');
                 span.className = 'task-item';
-                span.textContent = '★ ' + displayText;
-                span.addEventListener('click', (e) => {
+                span.textContent = '★ ' + display;
+                span.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    if (confirm(`Удалить "${displayText}"?`)) {
+                    if (confirm('Delete "'+display+'"?')) {
                         removeTaskForDate(date, idx);
                         renderMonth();
                         renderWeek();
                         renderDay();
                     }
                 });
-                listContainer.appendChild(span);
+                list.appendChild(span);
             });
         }
     }
 
     function setupMonthDropdowns() {
-        const monthTitle = document.getElementById('monthTitle');
-        monthTitle.addEventListener('click', (e) => {
+        let monthTitle = document.getElementById('monthTitle');
+        monthTitle.addEventListener('click', function(e) {
             e.stopPropagation();
-            toggleDropdown(monthTitle, monthNamesFull.map((name, idx) => ({
-                label: name,
-                action: () => {
-                    currentMonth = idx;
-                    renderMonth();
-                    renderWeek();
-                }
+            toggleDropdown(monthTitle, monthNamesFull.map((n,i) => ({
+                label: n,
+                action: function() { currentMonth = i; renderMonth(); renderWeek(); }
             })));
         });
-
-        const yearTitle = document.getElementById('yearTitle');
-        yearTitle.addEventListener('click', (e) => {
+        let yearTitle = document.getElementById('yearTitle');
+        yearTitle.addEventListener('click', function(e) {
             e.stopPropagation();
-            const years = [];
-            for (let y = currentYear - 3; y <= currentYear + 3; y++) {
-                years.push({ label: String(y), action: () => { currentYear = y; renderMonth(); renderWeek(); } });
+            let items = [];
+            for (let y=currentYear-3; y<=currentYear+3; y++) {
+                items.push({ label: String(y), action: function() { currentYear = y; renderMonth(); renderWeek(); } });
             }
-            toggleDropdown(yearTitle, years);
+            toggleDropdown(yearTitle, items);
         });
     }
 
     // ============================================================
-    //  WEEK VIEW
+    // RENDER WEEK
     // ============================================================
 
     function renderWeek() {
-        const grid = document.getElementById('weekGrid');
+        let grid = document.getElementById('weekGrid');
         grid.innerHTML = '';
 
-        const start = new Date(weekStart);
-        const dayOfWeek = start.getDay();
-        const diff = (dayOfWeek === 0) ? 6 : dayOfWeek - 1;
+        let start = new Date(weekStart);
+        let dow = start.getDay();
+        let diff = (dow===0) ? 6 : dow-1;
         start.setDate(start.getDate() - diff);
 
-        const endDate = new Date(start);
-        endDate.setDate(endDate.getDate() + 6);
+        let end = new Date(start);
+        end.setDate(end.getDate()+6);
         document.getElementById('weekStart').textContent = start.getDate();
-        document.getElementById('weekEnd').textContent = endDate.getDate();
+        document.getElementById('weekEnd').textContent = end.getDate();
         document.getElementById('weekMonth').textContent = monthNamesFull[start.getMonth()];
 
-        for (let i = 0; i < 7; i++) {
-            const date = new Date(start);
-            date.setDate(date.getDate() + i);
-            const dayNum = date.getDate();
-            const dayLetter = weekdays[i][0];
-            const tasksForDay = getTasksForDate(date);
+        for (let i=0; i<7; i++) {
+            let date = new Date(start);
+            date.setDate(date.getDate()+i);
+            let dayNum = date.getDate();
+            let dayLetter = weekdays[i][0];
+            let t = getTasksForDate(date);
 
-            const cell1 = document.createElement('div');
-            cell1.className = 'cell';
-            cell1.innerHTML = `<span class="day-number-large">${dayNum}</span>`;
-            grid.appendChild(cell1);
+            let c1 = document.createElement('div');
+            c1.className = 'cell';
+            c1.innerHTML = '<span class="day-number-large">'+dayNum+'</span>';
+            grid.appendChild(c1);
 
-            const cell2 = document.createElement('div');
-            cell2.className = 'cell';
-            const tasksDiv = document.createElement('div');
+            let c2 = document.createElement('div');
+            c2.className = 'cell';
+            let tasksDiv = document.createElement('div');
             tasksDiv.className = 'week-tasks';
-
-            if (tasksForDay.length > 0) {
-                const maxLeft = 5;
-                const leftCol = tasksForDay.slice(0, maxLeft);
-                const rightCol = tasksForDay.slice(maxLeft);
-
-                leftCol.forEach(task => {
-                    const span = document.createElement('span');
+            if (t.length > 0) {
+                let left = t.slice(0,5);
+                let right = t.slice(5);
+                left.forEach(task => {
+                    let display = task.replace(/^\d{2}:\d{2}\s/, '');
+                    let span = document.createElement('span');
                     span.className = 'task-item left';
-                    let displayText = task;
-                    if (displayText.match(/^\d{2}:\d{2}\s/)) {
-                        displayText = displayText.replace(/^\d{2}:\d{2}\s/, '');
-                    }
-                    span.textContent = '★ ' + displayText;
+                    span.textContent = '★ '+display;
                     tasksDiv.appendChild(span);
                 });
-
-                rightCol.forEach(task => {
-                    const span = document.createElement('span');
+                right.forEach(task => {
+                    let display = task.replace(/^\d{2}:\d{2}\s/, '');
+                    let span = document.createElement('span');
                     span.className = 'task-item right';
-                    let displayText = task;
-                    if (displayText.match(/^\d{2}:\d{2}\s/)) {
-                        displayText = displayText.replace(/^\d{2}:\d{2}\s/, '');
-                    }
-                    span.textContent = '★ ' + displayText;
+                    span.textContent = '★ '+display;
                     tasksDiv.appendChild(span);
                 });
             } else {
-                const empty = document.createElement('span');
+                let empty = document.createElement('span');
                 empty.className = 'task-item empty';
                 empty.textContent = '—';
                 tasksDiv.appendChild(empty);
             }
+            c2.appendChild(tasksDiv);
+            grid.appendChild(c2);
 
-            cell2.appendChild(tasksDiv);
-            grid.appendChild(cell2);
-
-            const cell3 = document.createElement('div');
-            cell3.className = 'cell';
-            cell3.innerHTML = `<span class="day-letter-large">${dayLetter}</span>`;
-            grid.appendChild(cell3);
+            let c3 = document.createElement('div');
+            c3.className = 'cell';
+            c3.innerHTML = '<span class="day-letter-large">'+dayLetter+'</span>';
+            grid.appendChild(c3);
         }
 
         setupWeekDropdowns();
     }
 
     function setupWeekDropdowns() {
-        const startEl = document.getElementById('weekStart');
-        const monthEl = document.getElementById('weekMonth');
+        let startEl = document.getElementById('weekStart');
+        let monthEl = document.getElementById('weekMonth');
 
-        startEl.addEventListener('click', (e) => {
+        startEl.addEventListener('click', function(e) {
             e.stopPropagation();
-            const mondays = [];
-            const date = new Date(weekStart);
+            let mondays = [];
+            let date = new Date(weekStart);
             date.setDate(1);
-            const month = date.getMonth();
-            const year = date.getFullYear();
-
-            for (let d = 1; d <= 31; d++) {
-                const check = new Date(year, month, d);
+            let month = date.getMonth();
+            let year = date.getFullYear();
+            for (let d=1; d<=31; d++) {
+                let check = new Date(year, month, d);
                 if (check.getMonth() !== month) break;
                 if (check.getDay() === 1) {
-                    mondays.push({
-                        label: `${d} ${monthNames[month]}`,
-                        action: () => {
-                            weekStart = new Date(year, month, d);
-                            renderWeek();
-                        }
-                    });
+                    mondays.push({ label: d+' '+monthNames[month], action: function() { weekStart = new Date(year, month, d); renderWeek(); } });
                 }
             }
-            if (mondays.length > 0) {
-                toggleDropdown(startEl, mondays);
-            }
+            if (mondays.length) toggleDropdown(startEl, mondays);
         });
 
-        monthEl.addEventListener('click', (e) => {
+        monthEl.addEventListener('click', function(e) {
             e.stopPropagation();
-            const year = weekStart.getFullYear();
-            const items = monthNamesFull.map((name, idx) => ({
-                label: name,
-                action: () => {
-                    weekStart = new Date(year, idx, 1);
-                    renderWeek();
-                }
-            }));
-            toggleDropdown(monthEl, items);
+            let year = weekStart.getFullYear();
+            toggleDropdown(monthEl, monthNamesFull.map((n,i) => ({ label: n, action: function() { weekStart = new Date(year, i, 1); renderWeek(); } })));
         });
     }
 
     // ============================================================
-    //  DAY VIEW
+    // RENDER DAY
     // ============================================================
 
     function renderDay() {
-        const date = currentDay;
-        const day = date.getDate();
-        const month = monthNamesFull[date.getMonth()];
-        const weekday = weekdaysFull[date.getDay() === 0 ? 6 : date.getDay() - 1];
+        let date = currentDay;
+        let day = date.getDate();
+        let month = monthNamesFull[date.getMonth()];
+        let weekday = weekdaysFull[date.getDay()===0?6:date.getDay()-1];
 
         document.getElementById('dayNumber').textContent = day;
         document.getElementById('dayMonth').textContent = month;
         document.getElementById('dayWeekday').textContent = weekday;
 
-        const tasksForDay = getTasksForDate(date);
-        const tasksContainer = document.getElementById('dayTasks');
-        const taskTextDiv = tasksContainer.querySelector('.task-text');
+        let t = getTasksForDate(date);
+        let container = document.getElementById('dayTasks');
+        let textDiv = container.querySelector('.task-text');
 
-        let timeToShow = '';
-        const tasksWithoutTime = [];
-
-        tasksForDay.forEach(task => {
-            const timeMatch = task.match(/^(\d{2}:\d{2})\s(.+)/);
-            if (timeMatch) {
-                if (!timeToShow) timeToShow = timeMatch[1];
-                tasksWithoutTime.push(timeMatch[2]);
+        let timeShow = '';
+        let tasksNoTime = [];
+        t.forEach(task => {
+            let match = task.match(/^(\d{2}:\d{2})\s(.+)/);
+            if (match) {
+                if (!timeShow) timeShow = match[1];
+                tasksNoTime.push(match[2]);
             } else {
-                tasksWithoutTime.push(task);
+                tasksNoTime.push(task);
             }
         });
+        document.getElementById('dayTime').textContent = timeShow || '--:--';
 
-        document.getElementById('dayTime').textContent = timeToShow || '--:--';
-
-        if (tasksWithoutTime.length === 0) {
-            taskTextDiv.innerHTML = '<span class="empty-text">Нет задач</span>';
+        if (tasksNoTime.length === 0) {
+            textDiv.innerHTML = '<span class="empty-text">No tasks</span>';
         } else {
-            taskTextDiv.innerHTML = '';
-            tasksWithoutTime.forEach((task, idx) => {
-                const span = document.createElement('span');
+            textDiv.innerHTML = '';
+            tasksNoTime.forEach((task, idx) => {
+                let span = document.createElement('span');
                 span.className = 'task-line';
                 span.textContent = task;
-                span.addEventListener('click', () => {
+                span.addEventListener('click', function() {
                     let originalIdx = -1;
-                    let foundCount = 0;
-                    for (let i = 0; i < tasksForDay.length; i++) {
-                        const t = tasksForDay[i];
-                        const tMatch = t.match(/^(\d{2}:\d{2})\s(.+)/);
-                        const display = tMatch ? tMatch[2] : t;
+                    let found = 0;
+                    for (let i=0; i<t.length; i++) {
+                        let display = t[i].replace(/^\d{2}:\d{2}\s/, '');
                         if (display === task) {
-                            foundCount++;
-                            if (foundCount === idx + 1) {
-                                originalIdx = i;
-                                break;
-                            }
+                            found++;
+                            if (found === idx+1) { originalIdx = i; break; }
                         }
                     }
-                    if (originalIdx !== -1 && confirm(`Удалить "${task}"?`)) {
+                    if (originalIdx !== -1 && confirm('Delete "'+task+'"?')) {
                         removeTaskForDate(date, originalIdx);
                         renderDay();
                         renderMonth();
                         renderWeek();
                     }
                 });
-                taskTextDiv.appendChild(span);
+                textDiv.appendChild(span);
             });
         }
 
@@ -1231,42 +1149,29 @@
     }
 
     function setupDayDropdowns() {
-        const dayEl = document.getElementById('dayNumber');
-        const monthEl = document.getElementById('dayMonth');
+        let dayEl = document.getElementById('dayNumber');
+        let monthEl = document.getElementById('dayMonth');
 
-        dayEl.addEventListener('click', (e) => {
+        dayEl.addEventListener('click', function(e) {
             e.stopPropagation();
-            const items = [];
-            const date = currentDay;
-            const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-            for (let d = 1; d <= daysInMonth; d++) {
-                items.push({
-                    label: String(d),
-                    action: () => {
-                        currentDay = new Date(date.getFullYear(), date.getMonth(), d);
-                        renderDay();
-                    }
-                });
+            let date = currentDay;
+            let days = new Date(date.getFullYear(), date.getMonth()+1, 0).getDate();
+            let items = [];
+            for (let d=1; d<=days; d++) {
+                items.push({ label: String(d), action: function() { currentDay = new Date(date.getFullYear(), date.getMonth(), d); renderDay(); } });
             }
             toggleDropdown(dayEl, items);
         });
 
-        monthEl.addEventListener('click', (e) => {
+        monthEl.addEventListener('click', function(e) {
             e.stopPropagation();
-            const year = currentDay.getFullYear();
-            const items = monthNamesFull.map((name, idx) => ({
-                label: name,
-                action: () => {
-                    currentDay = new Date(year, idx, 1);
-                    renderDay();
-                }
-            }));
-            toggleDropdown(monthEl, items);
+            let year = currentDay.getFullYear();
+            toggleDropdown(monthEl, monthNamesFull.map((n,i) => ({ label: n, action: function() { currentDay = new Date(year, i, 1); renderDay(); } })));
         });
     }
 
     // ============================================================
-    //  ВЫПАДАЮЩИЕ СПИСКИ
+    // DROPDOWN
     // ============================================================
 
     let activeDropdown = null;
@@ -1276,26 +1181,24 @@
             activeDropdown.remove();
             activeDropdown = null;
         }
-
-        const rect = anchor.getBoundingClientRect();
-        const dropdown = document.createElement('div');
-        dropdown.className = 'dropdown-content show';
-        dropdown.style.position = 'fixed';
-        dropdown.style.top = (rect.bottom + 4) + 'px';
-        dropdown.style.left = rect.left + 'px';
-        dropdown.style.minWidth = Math.max(rect.width, 100) + 'px';
-        dropdown.style.maxHeight = '200px';
-        dropdown.style.overflowY = 'auto';
-        dropdown.style.background = '#FDFBF7';
-        dropdown.style.border = '1px solid #E35D3B';
-        dropdown.style.zIndex = '9999';
-        dropdown.style.boxShadow = '0 4px 12px rgba(0,0,0,0.12)';
-
+        let rect = anchor.getBoundingClientRect();
+        let div = document.createElement('div');
+        div.className = 'dropdown-content show';
+        div.style.position = 'fixed';
+        div.style.top = (rect.bottom+4)+'px';
+        div.style.left = rect.left+'px';
+        div.style.minWidth = Math.max(rect.width, 100)+'px';
+        div.style.maxHeight = '200px';
+        div.style.overflowY = 'auto';
+        div.style.background = '#FDFBF7';
+        div.style.border = '1px solid #E35D3B';
+        div.style.zIndex = '9999';
+        div.style.boxShadow = '0 4px 12px rgba(0,0,0,0.12)';
         items.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'dropdown-item';
-            div.textContent = item.label;
-            div.addEventListener('click', (e) => {
+            let d = document.createElement('div');
+            d.className = 'dropdown-item';
+            d.textContent = item.label;
+            d.addEventListener('click', function(e) {
                 e.stopPropagation();
                 item.action();
                 if (activeDropdown) {
@@ -1303,7 +1206,7 @@
                     activeDropdown = null;
                 }
             });
-            div.addEventListener('touchstart', (e) => {
+            d.addEventListener('touchstart', function(e) {
                 e.preventDefault();
                 item.action();
                 if (activeDropdown) {
@@ -1311,35 +1214,33 @@
                     activeDropdown = null;
                 }
             });
-            dropdown.appendChild(div);
+            div.appendChild(d);
         });
-
-        document.body.appendChild(dropdown);
-        activeDropdown = dropdown;
-
-        const closeDropdown = (e) => {
+        document.body.appendChild(div);
+        activeDropdown = div;
+        let close = function(e) {
             if (activeDropdown && !activeDropdown.contains(e.target) && e.target !== anchor) {
                 activeDropdown.remove();
                 activeDropdown = null;
-                document.removeEventListener('click', closeDropdown);
-                document.removeEventListener('touchstart', closeDropdown);
+                document.removeEventListener('click', close);
+                document.removeEventListener('touchstart', close);
             }
         };
         setTimeout(() => {
-            document.addEventListener('click', closeDropdown);
-            document.addEventListener('touchstart', closeDropdown);
+            document.addEventListener('click', close);
+            document.addEventListener('touchstart', close);
         }, 100);
     }
 
     // ============================================================
-    //  ДОБАВЛЕНИЕ ЗАДАЧ
+    // MODAL
     // ============================================================
 
     let modalContext = null;
 
     function openModal(context) {
         modalContext = context;
-        const timeInput = document.getElementById('modalTaskTime');
+        let timeInput = document.getElementById('modalTaskTime');
         if (context.type === 'day') {
             timeInput.style.display = 'block';
         } else {
@@ -1356,19 +1257,19 @@
     }
 
     document.getElementById('modalCancel').addEventListener('click', closeModal);
-    document.getElementById('modalOverlay').addEventListener('click', (e) => {
+    document.getElementById('modalOverlay').addEventListener('click', function(e) {
         if (e.target === e.currentTarget) closeModal();
     });
 
-    document.getElementById('modalSave').addEventListener('click', () => {
-        const text = document.getElementById('modalTaskText').value.trim();
+    document.getElementById('modalSave').addEventListener('click', function() {
+        let text = document.getElementById('modalTaskText').value.trim();
         if (!text) {
-            alert('Введите название задачи');
+            alert('Enter task name');
             return;
         }
         if (modalContext) {
-            const date = modalContext.date;
-            const time = modalContext.type === 'day' ? document.getElementById('modalTaskTime').value : null;
+            let date = modalContext.date;
+            let time = modalContext.type === 'day' ? document.getElementById('modalTaskTime').value : null;
             addTaskForDate(date, text, time);
             closeModal();
             renderMonth();
@@ -1377,37 +1278,41 @@
         }
     });
 
-    document.getElementById('modalTaskText').addEventListener('keypress', (e) => {
+    document.getElementById('modalTaskText').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             document.getElementById('modalSave').click();
         }
     });
 
-    document.getElementById('addTaskMonthBtn').addEventListener('click', () => {
+    document.getElementById('addTaskMonthBtn').addEventListener('click', function() {
         openModal({ type: 'month', date: selectedDay });
     });
 
-    document.getElementById('dayAddBtn').addEventListener('click', () => {
+    document.getElementById('dayAddBtn').addEventListener('click', function() {
         openModal({ type: 'day', date: currentDay });
     });
 
-    document.getElementById('dayAddText').addEventListener('click', () => {
+    document.getElementById('dayAddText').addEventListener('click', function() {
         openModal({ type: 'day', date: currentDay });
     });
 
     // ============================================================
-    //  НАВИГАЦИЯ
+    // NAVIGATION
     // ============================================================
 
-    document.querySelectorAll('.bottom-nav .cell[data-nav], .month-detail .row-nav .cell[data-nav]').forEach(cell => {
-        cell.addEventListener('click', () => {
-            const nav = cell.dataset.nav;
-            document.querySelectorAll('.bottom-nav .cell[data-nav], .month-detail .row-nav .cell[data-nav]').forEach(c => c.classList.remove('active-nav'));
-            document.querySelectorAll(`.bottom-nav .cell[data-nav="${nav}"], .month-detail .row-nav .cell[data-nav="${nav}"]`).forEach(c => c.classList.add('active-nav'));
-
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(nav + 'Page').classList.add('active');
-
+    document.querySelectorAll('.bottom-nav .cell[data-nav], .month-detail .row-nav .cell[data-nav]').forEach(function(cell) {
+        cell.addEventListener('click', function() {
+            let nav = cell.dataset.nav;
+            document.querySelectorAll('.bottom-nav .cell[data-nav], .month-detail .row-nav .cell[data-nav]').forEach(function(c) {
+                c.classList.remove('active-nav');
+            });
+            document.querySelectorAll('.bottom-nav .cell[data-nav="'+nav+'"], .month-detail .row-nav .cell[data-nav="'+nav+'"]').forEach(function(c) {
+                c.classList.add('active-nav');
+            });
+            document.querySelectorAll('.page').forEach(function(p) {
+                p.classList.remove('active');
+            });
+            document.getElementById(nav+'Page').classList.add('active');
             if (nav === 'week') renderWeek();
             if (nav === 'day') renderDay();
             if (nav === 'month') renderMonth();
@@ -1415,33 +1320,38 @@
     });
 
     // ============================================================
-    //  ИНИЦИАЛИЗАЦИЯ
+    // INIT
     // ============================================================
 
-    const today = new Date(2026, 6, 16);
+    let today = new Date(2026, 6, 16);
     currentMonth = 6;
     currentYear = 2026;
     selectedDay = new Date(2026, 6, 16);
     currentDay = new Date(2026, 6, 16);
     weekStart = new Date(2026, 6, 13);
 
-    const testDate1 = new Date(2026, 6, 13);
-    const testDate2 = new Date(2026, 6, 16);
-    addTaskForDate(testDate1, 'MEET WITH FRIED', '');
-    addTaskForDate(testDate1, 'GO TO LIBRARY', '');
-    addTaskForDate(testDate1, 'MATHS', '');
-    addTaskForDate(testDate1, 'PHYSICS', '');
-    addTaskForDate(testDate1, 'CHEMISTRY', '');
-    addTaskForDate(testDate1, 'BIOLOGY', '');
-    addTaskForDate(testDate2, 'GO TO LIBRARY', '16:30');
-    addTaskForDate(testDate2, 'MEET WITH SUPERVISOR', '');
-    addTaskForDate(testDate2, 'HW FOR ECONOMICS', '');
+    // Добавляем тестовые задачи (опционально)
+    let test1 = new Date(2026, 6, 13);
+    let test2 = new Date(2026, 6, 16);
+    if (!tasks[getDateKey(test1)]) {
+        addTaskForDate(test1, 'MEET WITH FRIED', '');
+        addTaskForDate(test1, 'GO TO LIBRARY', '');
+        addTaskForDate(test1, 'MATHS', '');
+        addTaskForDate(test1, 'PHYSICS', '');
+        addTaskForDate(test1, 'CHEMISTRY', '');
+        addTaskForDate(test1, 'BIOLOGY', '');
+    }
+    if (!tasks[getDateKey(test2)]) {
+        addTaskForDate(test2, 'GO TO LIBRARY', '16:30');
+        addTaskForDate(test2, 'MEET WITH SUPERVISOR', '');
+        addTaskForDate(test2, 'HW FOR ECONOMICS', '');
+    }
 
     renderMonth();
     renderWeek();
     renderDay();
 
-    console.log('Приложение загружено!');
+    console.log('App loaded');
 </script>
 
 </body>
