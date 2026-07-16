@@ -1653,14 +1653,6 @@
     console.log('Приложение загружено!');
 
 </script>
-<script>
-    // Регистрация Service Worker для офлайн-режима
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
-            .then(() => console.log('Service Worker зарегистрирован'))
-            .catch(err => console.log('SW регистрация не удалась:', err));
-    }
-</script>
 
 </body>
 </html>
