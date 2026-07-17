@@ -93,7 +93,11 @@
             display: none;
             flex: 1;
             flex-direction: column;
-            padding: 10px 0 0;
+            /* ВЕРХНИЕ ТАБЛИЦЫ: отступ первой таблицы от верхнего края экрана.
+               Значение общее для всех трёх вкладок (MONTH/WEEK/DAY),
+               поэтому верх первой таблицы у них всегда совпадает.
+               Хочешь больше/меньше отступ сверху — меняй только первую цифру (сейчас 40px). */
+            padding: 40px 0 0;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             height: 100vh;
@@ -232,6 +236,10 @@
             align-items: center;
             justify-content: center;
             flex-direction: column;
+            /* Переключатель MONTH/DAY/WEEK больше не идёт следующей строкой внутри
+               этой таблицы (он переехал в .bottom-nav внизу экрана), поэтому у этой
+               строки убираем нижнюю границу — она теперь последняя в таблице. */
+            border-bottom: none;
         }
         
         .month-detail .row-detail .cell:first-child {
@@ -309,29 +317,6 @@
             font-size: 11px;
             color: #2A4B46;
             opacity: 0.4;
-        }
-        .month-detail .row-nav {
-            border-top: 1px solid #E35D3B;
-        }
-        .month-detail .row-nav .cell {
-            height: 55px;
-            border: none;
-            border-right: 1px solid #E35D3B;
-            font-size: 16px;
-            font-family: 'Times New Roman', Georgia, serif;
-            background: #FDFBF7;
-            cursor: pointer;
-            padding: 0;
-        }
-        .month-detail .row-nav .cell:last-child {
-            border-right: none;
-        }
-        .month-detail .row-nav .cell:active {
-            opacity: 0.6;
-        }
-        .month-detail .row-nav .cell.active-nav {
-            background: #2A4B46;
-            color: #FDFBF7;
         }
         .week-header {
             display: grid;
@@ -434,7 +419,10 @@
             color: #2A4B46;
         }
         
-        /* ===== ФИКСИРУЕМ НАВИГАЦИЮ ВНИЗУ ===== */
+        /* ===== САМАЯ НИЖНЯЯ ТАБЛИЦА (переключатель MONTH / DAY / WEEK) =====
+           Теперь используется одинаково на ВСЕХ трёх вкладках — она "прилипает"
+           (sticky) к низу экрана внутри .page. Если нужно поднять/опустить её
+           относительно низа экрана — меняй bottom: 0 ниже. */
         .bottom-nav {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -694,6 +682,7 @@
     <!-- MONTH -->
     <div class="page active" id="monthPage">
         <div class="page-content">
+            <!-- ВЕРХНИЕ ТАБЛИЦЫ этой вкладки: отступ от края экрана задаётся в CSS-правиле .page (padding-top) -->
             <div class="table-wrap">
                 <div class="month-header table">
                     <div class="cell month-clickable" id="monthTitle">JULY</div>
@@ -729,20 +718,24 @@
                             <button class="add-task-btn" id="addTaskMonthBtn">+</button>
                         </div>
                     </div>
-                    <div class="row-nav" style="display:contents;">
-                        <div class="cell active-nav" data-nav="month">MONTH</div>
-                        <div class="cell" data-nav="day">DAY</div>
-                        <div class="cell" data-nav="week">WEEK</div>
-                        <div class="cell"></div>
-                    </div>
+                    <!-- Переключатель MONTH/DAY/WEEK отсюда убран и вынесен ниже как .bottom-nav,
+                         теперь он выглядит и ведёт себя одинаково на всех трёх вкладках -->
                 </div>
             </div>
+        </div>
+        <!-- САМАЯ НИЖНЯЯ ТАБЛИЦА (переключатель MONTH/DAY/WEEK) — теперь внизу экрана, как на WEEK и DAY -->
+        <div class="bottom-nav table">
+            <div class="cell active-nav" data-nav="month">MONTH</div>
+            <div class="cell" data-nav="day">DAY</div>
+            <div class="cell" data-nav="week">WEEK</div>
+            <div class="cell"></div>
         </div>
     </div>
 
     <!-- WEEK -->
     <div class="page" id="weekPage">
         <div class="page-content">
+            <!-- ВЕРХНИЕ ТАБЛИЦЫ этой вкладки: отступ от края экрана задаётся в CSS-правиле .page (padding-top) -->
             <div class="table-wrap">
                 <div class="week-header table">
                     <div class="cell clickable" id="weekStart">13</div>
@@ -755,6 +748,7 @@
                 <div class="week-grid table" id="weekGrid"></div>
             </div>
         </div>
+        <!-- САМАЯ НИЖНЯЯ ТАБЛИЦА (переключатель MONTH/DAY/WEEK) -->
         <div class="bottom-nav table">
             <div class="cell" data-nav="month">MONTH</div>
             <div class="cell" data-nav="day">DAY</div>
@@ -766,6 +760,7 @@
     <!-- DAY -->
     <div class="page" id="dayPage">
         <div class="page-content">
+            <!-- ВЕРХНИЕ ТАБЛИЦЫ этой вкладки: отступ от края экрана задаётся в CSS-правиле .page (padding-top) -->
             <div class="table-wrap">
                 <div class="day-header table">
                     <div class="cell clickable" id="dayNumber">16</div>
@@ -797,6 +792,7 @@
                 </div>
             </div>
         </div>
+        <!-- САМАЯ НИЖНЯЯ ТАБЛИЦА (переключатель MONTH/DAY/WEEK) -->
         <div class="bottom-nav table">
             <div class="cell" data-nav="month">MONTH</div>
             <div class="cell active-nav" data-nav="day">DAY</div>
@@ -1312,15 +1308,17 @@
 
     // ============================================================
     // NAVIGATION
+    // (переключатель теперь везде — просто .bottom-nav, отдельный
+    //  случай для month-detail .row-nav больше не нужен)
     // ============================================================
 
-    document.querySelectorAll('.bottom-nav .cell[data-nav], .month-detail .row-nav .cell[data-nav]').forEach(function(cell) {
+    document.querySelectorAll('.bottom-nav .cell[data-nav]').forEach(function(cell) {
         cell.addEventListener('click', function() {
             let nav = cell.dataset.nav;
-            document.querySelectorAll('.bottom-nav .cell[data-nav], .month-detail .row-nav .cell[data-nav]').forEach(function(c) {
+            document.querySelectorAll('.bottom-nav .cell[data-nav]').forEach(function(c) {
                 c.classList.remove('active-nav');
             });
-            document.querySelectorAll('.bottom-nav .cell[data-nav="'+nav+'"], .month-detail .row-nav .cell[data-nav="'+nav+'"]').forEach(function(c) {
+            document.querySelectorAll('.bottom-nav .cell[data-nav="'+nav+'"]').forEach(function(c) {
                 c.classList.add('active-nav');
             });
             document.querySelectorAll('.page').forEach(function(p) {
