@@ -87,7 +87,7 @@
         .cell.clickable:active {
             opacity: 0.6;
         }
-        
+
         /* ===== ПРОКРУТКА ДЛЯ СТРАНИЦ ===== */
         .page {
             display: none;
@@ -106,7 +106,7 @@
         .page.active {
             display: flex;
         }
-        
+
         .month-header {
             display: grid;
             grid-template-columns: 20% 60% 20%;
@@ -229,7 +229,7 @@
         .month-detail .cell:last-child {
             border-right: none;
         }
-        
+
         /* ===== УВЕЛИЧИВАЕМ ВЫСОТУ ===== */
         .month-detail .row-detail .cell {
             height: 160px;
@@ -241,7 +241,7 @@
                строки убираем нижнюю границу — она теперь последняя в таблице. */
             border-bottom: none;
         }
-        
+
         .month-detail .row-detail .cell:first-child {
             justify-content: center;
             align-items: center;
@@ -277,7 +277,7 @@
             font-size: 12px;
             color: #2A4B46;
         }
-        
+
         /* ===== УЛУЧШАЕМ СПИСОК ЗАДАЧ ===== */
         .month-detail .task-list {
             font-size: 11px;
@@ -287,7 +287,7 @@
             max-height: 120px;
             overflow-y: auto;
         }
-        
+
         .month-detail .task-list .task-item {
             display: block;
             font-size: 11px;
@@ -418,9 +418,9 @@
             font-family: 'Times New Roman', Georgia, serif;
             color: #2A4B46;
         }
-        
+
         /* ===== САМАЯ НИЖНЯЯ ТАБЛИЦА (переключатель MONTH / DAY / WEEK) =====
-           Используется одинаково на ВСЕХ трёх вкладках — она "прилипает"
+           Теперь используется одинаково на ВСЕХ трёх вкладках — она "прилипает"
            (sticky) к низу экрана внутри .page. Если нужно поднять/опустить её
            относительно низа экрана — меняй bottom: 0 ниже. */
         .bottom-nav {
@@ -435,7 +435,7 @@
             z-index: 10;
             flex-shrink: 0;
         }
-        
+
         .bottom-nav .cell {
             height: 50px;
             border: none;
@@ -569,10 +569,6 @@
         .day-add-task .cell .add-icon {
             font-size: 28px;
         }
-
-        /* ===== ВЫПАДАЮЩИЕ СПИСКИ (месяц / год / день) =====
-           ИСПРАВЛЕНО: добавлены -webkit-overflow-scrolling и touch-action,
-           чтобы список плавно скроллился пальцем на телефоне. */
         .dropdown-content {
             display: none;
             position: fixed;
@@ -581,13 +577,14 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             z-index: 9999;
             border: 1px solid #E35D3B;
-            /* Высота видимой части списка до появления прокрутки.
-               Увеличь/уменьши это число, если хочешь показывать больше/меньше пунктов сразу. */
-            max-height: 280px;
+            max-height: 200px;
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch; /* инерционная прокрутка на iOS */
-            touch-action: pan-y; /* разрешаем вертикальный жест прокрутки внутри списка */
-            overscroll-behavior: contain; /* не даём прокрутке "пробивать" в фон под списком */
+            /* ИСПРАВЛЕНО (прокрутка списка): плавная инерционная прокрутка на iOS,
+               разрешаем именно вертикальный жест внутри списка и не даём
+               скроллу "утекать" на страницу позади дропдауна */
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
+            overscroll-behavior: contain;
         }
         .dropdown-content.show {
             display: block;
@@ -680,7 +677,7 @@
         #modalTaskTime {
             display: none;
         }
-        
+
         *:focus { outline: none; }
         ::-webkit-scrollbar { width: 0; height: 0; }
     </style>
@@ -1191,12 +1188,6 @@
 
     // ============================================================
     // DROPDOWN
-    // ИСПРАВЛЕНО: раньше на каждый пункт списка вешался touchstart с
-    // preventDefault(), который сразу выбирал пункт при касании и НЕ давал
-    // пальцу прокрутить список. Теперь пункты реагируют только на click —
-    // он одинаково срабатывает и от мыши, и от лёгкого тапа пальцем, но не
-    // мешает жесту прокрутки (браузер сам не генерирует click, если палец
-    // сдвинулся, т.е. это был скролл, а не тап).
     // ============================================================
 
     let activeDropdown = null;
@@ -1213,18 +1204,26 @@
         div.style.top = (rect.bottom+4)+'px';
         div.style.left = rect.left+'px';
         div.style.minWidth = Math.max(rect.width, 100)+'px';
-        // max-height и overflow-y уже заданы в CSS (.dropdown-content),
-        // здесь их не дублируем, чтобы не разъезжались с настройками в <style>
+        div.style.maxHeight = '200px';
+        div.style.overflowY = 'auto';
         div.style.background = '#FDFBF7';
         div.style.border = '1px solid #E35D3B';
         div.style.zIndex = '9999';
         div.style.boxShadow = '0 4px 12px rgba(0,0,0,0.12)';
+        // ИСПРАВЛЕНО (прокрутка списка): инлайн-фолбэк на случай, если класс не подхватится
+        div.style.webkitOverflowScrolling = 'touch';
+        div.style.touchAction = 'pan-y';
+
         items.forEach(item => {
             let d = document.createElement('div');
             d.className = 'dropdown-item';
             d.textContent = item.label;
-            // Только click — одинаково работает для мыши и тапа пальцем,
-            // и не блокирует прокрутку списка (см. комментарий выше).
+
+            // ИСПРАВЛЕНО (прокрутка списка): раньше здесь был ещё и touchstart
+            // с preventDefault(), который срабатывал мгновенно при касании
+            // и не давал пальцу прокрутить список. Оставляем только click —
+            // он не срабатывает, если палец сдвинулся (был скролл), и
+            // срабатывает по короткому тапу без движения (был выбор пункта).
             d.addEventListener('click', function(e) {
                 e.stopPropagation();
                 item.action();
@@ -1233,31 +1232,22 @@
                     activeDropdown = null;
                 }
             });
+
             div.appendChild(d);
         });
         document.body.appendChild(div);
         activeDropdown = div;
-
-        // Если список выходит за нижний край экрана — приподнимаем его,
-        // чтобы все пункты (включая последние месяцы/дни) были доступны для скролла.
-        requestAnimationFrame(() => {
-            const dropRect = div.getBoundingClientRect();
-            const overflowBottom = dropRect.bottom - window.innerHeight;
-            if (overflowBottom > 0) {
-                const newTop = Math.max(4, rect.top - dropRect.height - 4);
-                div.style.top = newTop + 'px';
-            }
-        });
-
         let close = function(e) {
             if (activeDropdown && !activeDropdown.contains(e.target) && e.target !== anchor) {
                 activeDropdown.remove();
                 activeDropdown = null;
                 document.removeEventListener('click', close);
+                document.removeEventListener('touchstart', close);
             }
         };
         setTimeout(() => {
             document.addEventListener('click', close);
+            document.addEventListener('touchstart', close);
         }, 100);
     }
 
@@ -1327,6 +1317,7 @@
 
     // ============================================================
     // NAVIGATION
+    // (переключатель теперь везде — просто .bottom-nav)
     // ============================================================
 
     document.querySelectorAll('.bottom-nav .cell[data-nav]').forEach(function(cell) {
