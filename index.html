@@ -483,6 +483,12 @@
         .day-header .cell.clickable:active {
             opacity: 0.6;
         }
+
+        /* ===== РАСПИСАНИЕ ДНЯ =====
+           ИЗМЕНЕНО: раньше это была одна большая ячейка со всем временем сразу и
+           отдельная ячейка со всеми задачами списком (время относилось только к
+           первой задаче). Теперь JS строит таблицу построчно: время | задача —
+           и время всегда стоит в одной строке именно со своей задачей. */
         .day-schedule {
             display: grid;
             grid-template-columns: 14% 86%;
@@ -494,19 +500,30 @@
         .day-schedule .cell {
             border: none;
             border-right: 1px solid #E35D3B;
+            border-bottom: 1px solid #E35D3B;
             font-family: 'Times New Roman', Georgia, serif;
             background: #FDFBF7;
-            padding: 15px 6px;
+            padding: 14px 6px;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: center;
             flex-direction: column;
-            min-height: 450px;
+            min-height: 56px;
         }
-        .day-schedule .cell:last-child {
+        /* Ячейка со временем — 1-я, 3-я, 5-я... ячейка в каждой строке */
+        .day-schedule .cell:nth-child(odd) {
+            align-items: center;
+            justify-content: center;
+        }
+        /* Ячейка с текстом задачи — 2-я, 4-я, 6-я... ячейка в каждой строке */
+        .day-schedule .cell:nth-child(even) {
             border-right: none;
             align-items: flex-start;
             justify-content: flex-start;
-            padding: 15px 6px 15px 15px;
+            padding: 14px 6px 14px 15px;
+        }
+        /* Убираем нижнюю границу у последней строки (проставляется динамически в JS) */
+        .day-schedule .cell.last-row {
+            border-bottom: none;
         }
         .day-schedule .cell .time-label {
             font-size: 16px;
@@ -580,7 +597,7 @@
             border: 1px solid #E35D3B;
             max-height: 200px;
             overflow-y: auto;
-            /* ИСПРАВЛЕНО (прокрутка списка): плавная инерционная прокрутка на iOS,
+            /* прокрутка списка: плавная инерционная прокрутка на iOS,
                разрешаем именно вертикальный жест внутри списка и не даём
                скроллу "утекать" на страницу позади дропдауна */
             -webkit-overflow-scrolling: touch;
@@ -654,6 +671,24 @@
             color: #2A4B46;
             opacity: 0.5;
         }
+        /* ДОБАВЛЕНО: строка с галочкой "Указать время" в модальном окне добавления задачи.
+           Показывается только когда добавляешь задачу со вкладки DAY. */
+        .modal-checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Times New Roman', Georgia, serif;
+            font-size: 15px;
+            color: #2A4B46;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+        .modal-checkbox-row input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #2A4B46;
+            cursor: pointer;
+        }
         .modal .modal-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -725,12 +760,10 @@
                             <button class="add-task-btn" id="addTaskMonthBtn">+</button>
                         </div>
                     </div>
-                    <!-- Переключатель MONTH/DAY/WEEK отсюда убран и вынесен ниже как .bottom-nav,
-                         теперь он выглядит и ведёт себя одинаково на всех трёх вкладках -->
                 </div>
             </div>
         </div>
-        <!-- САМАЯ НИЖНЯЯ ТАБЛИЦА (переключатель MONTH/DAY/WEEK) — теперь внизу экрана, как на WEEK и DAY -->
+        <!-- САМАЯ НИЖНЯЯ ТАБЛИЦА (переключатель MONTH/DAY/WEEK) -->
         <div class="bottom-nav table">
             <div class="cell active-nav" data-nav="month">MONTH</div>
             <div class="cell" data-nav="day">DAY</div>
@@ -776,17 +809,10 @@
                 </div>
             </div>
             <div class="table-wrap">
-                <div class="day-schedule table">
-                    <div class="cell">
-                        <span class="time-label" id="dayTime">16:30</span>
-                    </div>
-                    <div class="cell" id="dayTasks">
-                        <div class="task-text">
-                            <span class="task-line">GO TO LIBRARY</span>
-                            <span class="task-line">MEET WITH SUPERVISOR</span>
-                            <span class="task-line">HW FOR ECONOMICS</span>
-                        </div>
-                    </div>
+                <!-- Расписание дня: JS генерирует пары ячеек (время | задача) построчно,
+                     поэтому время всегда стоит напротив своей же задачи -->
+                <div class="day-schedule table" id="daySchedule">
+                    <!-- Заполняется JS в renderDay() -->
                 </div>
             </div>
             <div class="table-wrap">
@@ -814,6 +840,12 @@
     <div class="modal">
         <h3>New Task</h3>
         <input type="text" id="modalTaskText" placeholder="Task name..." />
+        <!-- ДОБАВЛЕНО: галочка "указать время" — видна только для задач со вкладки DAY.
+             Не отмечена — задача добавится без времени. Отмечена — появится выбор времени. -->
+        <label class="modal-checkbox-row" id="modalTimeToggleRow">
+            <input type="checkbox" id="modalTimeToggle" />
+            <span>Указать время</span>
+        </label>
         <input type="time" id="modalTaskTime" value="12:00" />
         <div class="modal-buttons">
             <button id="modalCancel">Cancel</button>
@@ -1117,49 +1149,71 @@
         document.getElementById('dayWeekday').textContent = weekday;
 
         let t = getTasksForDate(date);
-        let container = document.getElementById('dayTasks');
-        let textDiv = container.querySelector('.task-text');
+        let schedule = document.getElementById('daySchedule');
+        schedule.innerHTML = '';
 
-        let timeShow = '';
-        let tasksNoTime = [];
-        t.forEach(task => {
-            let match = task.match(/^(\d{2}:\d{2})\s(.+)/);
-            if (match) {
-                if (!timeShow) timeShow = match[1];
-                tasksNoTime.push(match[2]);
-            } else {
-                tasksNoTime.push(task);
-            }
-        });
-        document.getElementById('dayTime').textContent = timeShow || '--:--';
+        if (t.length === 0) {
+            // Пустой день: одна строка, время не показываем
+            let timeCell = document.createElement('div');
+            timeCell.className = 'cell last-row';
+            schedule.appendChild(timeCell);
 
-        if (tasksNoTime.length === 0) {
-            textDiv.innerHTML = '<span class="empty-text">No tasks</span>';
+            let taskCell = document.createElement('div');
+            taskCell.className = 'cell last-row';
+            taskCell.innerHTML = '<div class="task-text"><span class="empty-text">No tasks</span></div>';
+            schedule.appendChild(taskCell);
         } else {
-            textDiv.innerHTML = '';
-            tasksNoTime.forEach((task, idx) => {
+            // ИЗМЕНЕНО: раньше время показывалось только у первой найденной задачи
+            // в отдельной ячейке слева, общей для всех. Теперь для каждой задачи
+            // строится своя строка (время | задача), и время видно именно там,
+            // где оно относится к своей же задаче.
+            t.forEach((task, i) => {
+                let match = task.match(/^(\d{2}:\d{2})\s(.+)/);
+                let timeText = match ? match[1] : '';
+                let displayText = match ? match[2] : task;
+
+                let timeCell = document.createElement('div');
+                timeCell.className = 'cell';
+                if (timeText) {
+                    let timeSpan = document.createElement('span');
+                    timeSpan.className = 'time-label';
+                    timeSpan.textContent = timeText;
+                    timeCell.appendChild(timeSpan);
+                }
+                schedule.appendChild(timeCell);
+
+                let taskCell = document.createElement('div');
+                taskCell.className = 'cell';
+                let taskTextWrap = document.createElement('div');
+                taskTextWrap.className = 'task-text';
                 let span = document.createElement('span');
                 span.className = 'task-line';
-                span.textContent = task;
+                span.textContent = displayText;
+
+                // ИСПРАВЛЕНО (удаление задач): раньше нужный индекс для удаления
+                // искали по совпадению текста задачи, из-за чего при одинаковых
+                // названиях у задачи с месяца и задачи с дня можно было удалить
+                // не ту запись. Порядок строк на экране всегда совпадает с
+                // порядком хранения задач в массиве, поэтому используем индекс i
+                // напрямую — это надёжно работает для задач из любой вкладки.
                 span.addEventListener('click', function() {
-                    let originalIdx = -1;
-                    let found = 0;
-                    for (let i=0; i<t.length; i++) {
-                        let display = t[i].replace(/^\d{2}:\d{2}\s/, '');
-                        if (display === task) {
-                            found++;
-                            if (found === idx+1) { originalIdx = i; break; }
-                        }
-                    }
-                    if (originalIdx !== -1 && confirm('Delete "'+task+'"?')) {
-                        removeTaskForDate(date, originalIdx);
+                    if (confirm('Delete "'+displayText+'"?')) {
+                        removeTaskForDate(date, i);
                         renderDay();
                         renderMonth();
                         renderWeek();
                     }
                 });
-                textDiv.appendChild(span);
+
+                taskTextWrap.appendChild(span);
+                taskCell.appendChild(taskTextWrap);
+                schedule.appendChild(taskCell);
             });
+
+            // Убираем нижнюю границу у последней строки (последние 2 ячейки)
+            let cells = schedule.children;
+            cells[cells.length-1].classList.add('last-row');
+            cells[cells.length-2].classList.add('last-row');
         }
 
         setupDayDropdowns();
@@ -1211,7 +1265,6 @@
         div.style.border = '1px solid #E35D3B';
         div.style.zIndex = '9999';
         div.style.boxShadow = '0 4px 12px rgba(0,0,0,0.12)';
-        // ИСПРАВЛЕНО (прокрутка списка): инлайн-фолбэк на случай, если класс не подхватится
         div.style.webkitOverflowScrolling = 'touch';
         div.style.touchAction = 'pan-y';
 
@@ -1220,11 +1273,6 @@
             d.className = 'dropdown-item';
             d.textContent = item.label;
 
-            // ИСПРАВЛЕНО (прокрутка списка): раньше здесь был ещё и touchstart
-            // с preventDefault(), который срабатывал мгновенно при касании
-            // и не давал пальцу прокрутить список. Оставляем только click —
-            // он не срабатывает, если палец сдвинулся (был скролл), и
-            // срабатывает по короткому тапу без движения (был выбор пункта).
             d.addEventListener('click', function(e) {
                 e.stopPropagation();
                 item.action();
@@ -1260,12 +1308,22 @@
 
     function openModal(context) {
         modalContext = context;
+        let timeToggleRow = document.getElementById('modalTimeToggleRow');
+        let timeToggle = document.getElementById('modalTimeToggle');
         let timeInput = document.getElementById('modalTaskTime');
+
         if (context.type === 'day') {
-            timeInput.style.display = 'block';
+            // ДОБАВЛЕНО: для вкладки DAY показываем галочку "Указать время";
+            // сам инпут времени виден только если галочка отмечена
+            timeToggleRow.style.display = 'flex';
+            timeToggle.checked = false;
+            timeInput.style.display = 'none';
         } else {
+            // Задачи со вкладки MONTH всегда без времени — галочку и поле времени скрываем
+            timeToggleRow.style.display = 'none';
             timeInput.style.display = 'none';
         }
+
         document.getElementById('modalOverlay').classList.add('show');
         document.getElementById('modalTaskText').value = '';
         document.getElementById('modalTaskText').focus();
@@ -1275,6 +1333,10 @@
         document.getElementById('modalOverlay').classList.remove('show');
         modalContext = null;
     }
+
+    document.getElementById('modalTimeToggle').addEventListener('change', function() {
+        document.getElementById('modalTaskTime').style.display = this.checked ? 'block' : 'none';
+    });
 
     document.getElementById('modalCancel').addEventListener('click', closeModal);
     document.getElementById('modalOverlay').addEventListener('click', function(e) {
@@ -1289,7 +1351,12 @@
         }
         if (modalContext) {
             let date = modalContext.date;
-            let time = modalContext.type === 'day' ? document.getElementById('modalTaskTime').value : null;
+            // ДОБАВЛЕНО: время добавляется только если это вкладка DAY и галочка отмечена.
+            // Иначе (в т.ч. всегда для MONTH) — задача добавляется без времени.
+            let time = null;
+            if (modalContext.type === 'day' && document.getElementById('modalTimeToggle').checked) {
+                time = document.getElementById('modalTaskTime').value;
+            }
             addTaskForDate(date, text, time);
             closeModal();
             renderMonth();
@@ -1318,7 +1385,6 @@
 
     // ============================================================
     // NAVIGATION
-    // (переключатель теперь везде — просто .bottom-nav)
     // ============================================================
 
     document.querySelectorAll('.bottom-nav .cell[data-nav]').forEach(function(cell) {
