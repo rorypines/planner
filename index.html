@@ -8,8 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="planner" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="theme-color" content="#FDFBF7" />
-    <!-- ИСПРАВЛЕННАЯ СТРОКА -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>" />
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.75em' font-size='70' text-anchor='middle' x='50'%3EP%3C/text%3E%3C/svg%3E" />
     <link rel="manifest" href="manifest.json" />
     <title>planner</title>
     <style>
@@ -89,15 +88,10 @@
             opacity: 0.6;
         }
 
-        /* ===== ПРОКРУТКА ДЛЯ СТРАНИЦ ===== */
         .page {
             display: none;
             flex: 1;
             flex-direction: column;
-            /* ВЕРХНИЕ ТАБЛИЦЫ: отступ первой таблицы от верхнего края экрана.
-               Значение общее для всех трёх вкладок (MONTH/WEEK/DAY),
-               поэтому верх первой таблицы у них всегда совпадает.
-               Хочешь больше/меньше отступ сверху — меняй только первую цифру (сейчас 40px). */
             padding: 40px 0 0;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
@@ -141,6 +135,45 @@
         .month-header .cell.month-clickable:active {
             opacity: 0.6;
         }
+
+        .month-toolbar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border: 1px solid #E35D3B;
+            width: 100%;
+            background: #FDFBF7;
+        }
+        .month-toolbar .cell {
+            height: 45px;
+            border: none;
+            border-right: 1px solid #E35D3B;
+            font-size: 14px;
+            font-family: 'Times New Roman', Georgia, serif;
+            background: #FDFBF7;
+            color: #2A4B46;
+            cursor: pointer;
+            padding: 5px;
+        }
+        .month-toolbar .cell:last-child { border-right: none; }
+        .month-toolbar .cell:active { opacity: 0.6; }
+        #searchInput {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-family: 'Times New Roman', Georgia, serif;
+            font-size: 14px;
+            padding: 10px 14px;
+            color: #2A4B46;
+            outline: none;
+        }
+        .search-result-row {
+            justify-content: flex-start !important;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            text-align: left;
+        }
+
         .month-weekdays {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -231,7 +264,6 @@
             border-right: none;
         }
 
-        /* ===== УВЕЛИЧИВАЕМ ВЫСОТУ ===== */
         .month-detail .row-detail .cell {
             height: 160px;
             align-items: center;
@@ -276,7 +308,6 @@
             color: #2A4B46;
         }
 
-        /* ===== УЛУЧШАЕМ СПИСОК ЗАДАЧ ===== */
         .month-detail .task-list {
             font-size: 11px;
             color: #2A4B46;
@@ -287,7 +318,8 @@
         }
 
         .month-detail .task-list .task-item {
-            display: block;
+            display: flex;
+            align-items: center;
             font-size: 11px;
             white-space: nowrap;
             overflow: hidden;
@@ -477,13 +509,9 @@
             opacity: 0.6;
         }
 
-        /* ===== РАСПИСАНИЕ ДНЯ =====
-           JS строит таблицу построчно: время | задача — и время всегда
-           стоит в одной строке именно со своей задачей (берётся из поля
-           task.time, а не вычисляется через regex по тексту). */
         .day-schedule {
             display: grid;
-            grid-template-columns: 14% 86%;
+            grid-template-columns: 20% 80%;
             border: 1px solid #E35D3B;
             width: 100%;
             background: #FDFBF7;
@@ -519,6 +547,12 @@
             color: #2A4B46;
             font-family: 'Times New Roman', Georgia, serif;
         }
+        .day-schedule .cell .date-label {
+            font-size: 11px;
+            color: #2A4B46;
+            opacity: 0.6;
+            margin-top: 2px;
+        }
         .day-schedule .cell .task-text {
             font-size: 16px;
             color: #2A4B46;
@@ -527,24 +561,24 @@
             width: 100%;
         }
         .day-schedule .cell .task-text .task-line {
-            display: block;
+            display: flex;
+            align-items: center;
             font-size: 16px;
             cursor: pointer;
         }
         .day-schedule .cell .task-text .task-line:active {
             opacity: 0.6;
         }
-        /* ДОБАВЛЕНО: задачи, добавленные из вкладки MONTH, в дне не удаляются —
-           убираем у них указатель-руку и эффект нажатия, чтобы было видно,
-           что они здесь "только для просмотра" */
-        .day-schedule .cell .task-text .task-line.no-delete {
-            cursor: default;
-        }
-        .day-schedule .cell .task-text .task-line.no-delete:active {
-            opacity: 1;
-        }
         .day-schedule .cell .task-text .empty-text {
             opacity: 0.4;
+        }
+        .indicator-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            min-width: 7px;
+            border-radius: 50%;
+            margin-right: 4px;
         }
         .day-add-task {
             display: grid;
@@ -591,7 +625,7 @@
             background: #FDFBF7;
             min-width: 100px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 9999;
+            z-index: 10001;
             border: 1px solid #E35D3B;
             max-height: 200px;
             overflow-y: auto;
@@ -638,6 +672,9 @@
             border: 1px solid #E35D3B;
             max-width: 380px;
             width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             padding: 24px 20px;
             font-family: 'Times New Roman', Georgia, serif;
         }
@@ -648,7 +685,7 @@
             font-family: 'Times New Roman', Georgia, serif;
             font-weight: normal;
         }
-        .modal input {
+        .modal input[type="text"] {
             width: 100%;
             padding: 12px 14px;
             font-size: 16px;
@@ -681,6 +718,50 @@
             height: 18px;
             accent-color: #2A4B46;
             cursor: pointer;
+        }
+        .modal-field-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: 'Times New Roman', Georgia, serif;
+            font-size: 15px;
+            color: #2A4B46;
+            margin-bottom: 12px;
+            border: 1px solid #E35D3B;
+            padding: 10px 12px;
+        }
+        .modal-field-row .modal-field-label {
+            opacity: 0.8;
+        }
+        .modal-field-value.clickable {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .modal-field-row input[type="date"] {
+            border: none;
+            background: transparent;
+            font-family: 'Times New Roman', Georgia, serif;
+            font-size: 15px;
+            color: #2A4B46;
+            outline: none;
+        }
+        .modal-buttons-extra {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .modal-buttons-extra button {
+            padding: 10px;
+            font-size: 15px;
+            font-family: 'Times New Roman', Georgia, serif;
+            border: 1px solid #E35D3B;
+            background: #FDFBF7;
+            color: #2A4B46;
+            cursor: pointer;
+        }
+        .modal-buttons-extra button:active {
+            opacity: 0.6;
         }
         .modal .modal-buttons {
             display: grid;
@@ -724,6 +805,24 @@
                     <div class="cell"></div>
                 </div>
             </div>
+
+            <div class="table-wrap">
+                <div class="month-toolbar table">
+                    <div class="cell clickable" id="searchToggleBtn">🔍 Поиск</div>
+                    <div class="cell clickable" id="exportBtn">Export</div>
+                    <div class="cell clickable" id="importBtn">Import</div>
+                </div>
+            </div>
+            <div class="table-wrap" id="searchBarWrap" style="display:none;">
+                <div class="month-toolbar table" style="grid-template-columns: 1fr;">
+                    <input type="text" id="searchInput" placeholder="Поиск задач..." />
+                </div>
+            </div>
+            <div class="table-wrap" id="searchResultsWrap" style="display:none;">
+                <div class="table" id="searchResults" style="grid-template-columns: 1fr;"></div>
+            </div>
+            <input type="file" id="importFileInput" accept="application/json" style="display:none;" />
+
             <div class="table-wrap">
                 <div class="month-weekdays table" id="monthWeekdays"></div>
             </div>
@@ -741,11 +840,7 @@
                             </div>
                         </div>
                         <div class="cell" id="detailTasks">
-                            <div class="task-list">
-                                <span class="task-item">★ GO TO LIBRARY</span>
-                                <span class="task-item">★ MEET WITH SUPERVISOR</span>
-                                <span class="task-item">★ HW FOR ECONOMICS</span>
-                            </div>
+                            <div class="task-list"></div>
                         </div>
                         <div class="cell"></div>
                         <div class="cell">
@@ -797,9 +892,7 @@
                 </div>
             </div>
             <div class="table-wrap">
-                <div class="day-schedule table" id="daySchedule">
-                    <!-- Заполняется JS в renderDay() -->
-                </div>
+                <div class="day-schedule table" id="daySchedule"></div>
             </div>
             <div class="table-wrap">
                 <div class="day-add-task table">
@@ -820,16 +913,43 @@
     </div>
 </div>
 
-<!-- MODAL -->
+<!-- MODAL: добавление / редактирование задачи -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
-        <h3>New Task</h3>
+        <h3 id="modalTitle">New Task</h3>
         <input type="text" id="modalTaskText" placeholder="Task name..." />
+
+        <div class="modal-field-row" id="modalDateRow" style="display:none;">
+            <span class="modal-field-label">Дата:</span>
+            <input type="date" id="modalTaskDate" />
+        </div>
+
         <label class="modal-checkbox-row" id="modalTimeToggleRow">
             <input type="checkbox" id="modalTimeToggle" />
             <span>Указать время</span>
         </label>
         <input type="time" id="modalTaskTime" value="12:00" />
+
+        <div class="modal-field-row" id="modalCategoryRow">
+            <span class="modal-field-label">Категория:</span>
+            <span class="modal-field-value clickable" id="modalCategoryValue">Другое</span>
+        </div>
+
+        <div class="modal-field-row" id="modalPriorityRow">
+            <span class="modal-field-label">Приоритет:</span>
+            <span class="modal-field-value clickable" id="modalPriorityValue">Средний</span>
+        </div>
+
+        <div class="modal-field-row" id="modalRepeatRow">
+            <span class="modal-field-label">Повтор:</span>
+            <span class="modal-field-value clickable" id="modalRepeatValue">Нет</span>
+        </div>
+
+        <div class="modal-buttons-extra" id="modalExtraButtons" style="display:none;">
+            <button id="modalDuplicate">Duplicate</button>
+            <button id="modalDelete">Delete</button>
+        </div>
+
         <div class="modal-buttons">
             <button id="modalCancel">Cancel</button>
             <button class="primary" id="modalSave">Add</button>
@@ -839,12 +959,8 @@
 
 <script>
     // ============================================================
-    // DATA
+    // DATA (п.4 ТЗ: id, название, дата, время, дата создания, источник)
     // ============================================================
-    // ИЗМЕНЕНО: раньше задача хранилась просто строкой ("16:30 TEXT" или "TEXT").
-    // Теперь задача — объект { text, time, source }, где source: 'day' | 'month' —
-    // это и есть информация "откуда добавлена задача", по которой определяется,
-    // можно ли её удалить со вкладки DAY.
 
     let tasks = JSON.parse(localStorage.getItem('plannerTasks')) || {};
     let currentMonth = 6;
@@ -858,6 +974,16 @@
     const weekdays = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
     const weekdaysFull = ['MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY','SUNDAY'];
 
+    const categoryLabels = { study:'Учёба', work:'Работа', personal:'Личное', sport:'Спорт', other:'Другое' };
+    const categoryColors = { study:'#6C8EBF', work:'#B85C5C', personal:'#8E6CB8', sport:'#5CA85C', other:'#999999' };
+    const priorityLabels = { high:'Высокий', medium:'Средний', low:'Низкий' };
+    const priorityColors = { high:'#C0392B', medium:'#D68910', low:'#7F8C8D' };
+    const repeatLabels = { none:'Нет', daily:'Ежедневно', weekly:'Еженедельно', monthly:'Ежемесячно', yearly:'Ежегодно' };
+
+    function uid() {
+        return 't_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 9);
+    }
+
     function saveTasks() {
         localStorage.setItem('plannerTasks', JSON.stringify(tasks));
     }
@@ -869,49 +995,167 @@
         return y+'-'+m+'-'+d;
     }
 
-    function getTasksForDate(date) {
-        return tasks[getDateKey(date)] || [];
+    function keyToDateObj(key) {
+        let parts = key.split('-');
+        return new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1, parseInt(parts[2],10));
     }
 
-    // ИЗМЕНЕНО: теперь принимает source ('day' или 'month') и сохраняет
-    // задачу как объект, а не строку. time может быть null/'' — тогда
-    // считается, что времени нет.
-    function removeTaskForDate(date,id){
-        const key=getDateKey(date);
-        if(!tasks[key]) return;
-        tasks[key]=tasks[key].filter(task=>task.id!==id);
-        if(tasks[key].length===0){
-            delete tasks[key];
+    function formatShortDate(d) {
+        return d.getDate() + ' ' + monthNames[d.getMonth()];
+    }
+
+    // ============================================================
+    // МИГРАЦИЯ СТАРОГО ФОРМАТА ДАННЫХ (п.5: данные не должны теряться)
+    // ============================================================
+    (function migrateTasks() {
+        let changed = false;
+        Object.keys(tasks).forEach(function(key) {
+            tasks[key] = tasks[key].map(function(t) {
+                if (typeof t === 'string') {
+                    let m = t.match(/^(\d{2}:\d{2})\s(.+)/);
+                    changed = true;
+                    return {
+                        id: uid(), text: m ? m[2] : t, date: key, time: m ? m[1] : '',
+                        created: Date.now(), source: 'day', category: 'other',
+                        priority: 'medium', repeat: 'none', seriesId: null
+                    };
+                }
+                let obj = Object.assign({}, t);
+                let needsFix = false;
+                if (!obj.id) { obj.id = uid(); needsFix = true; }
+                if (!obj.date) { obj.date = key; needsFix = true; }
+                if (obj.time === undefined) { obj.time = ''; needsFix = true; }
+                if (obj.created === undefined) { obj.created = Date.now(); needsFix = true; }
+                if (!obj.source) { obj.source = 'day'; needsFix = true; }
+                if (!obj.category) { obj.category = 'other'; needsFix = true; }
+                if (!obj.priority) { obj.priority = 'medium'; needsFix = true; }
+                if (obj.repeat === undefined) { obj.repeat = 'none'; needsFix = true; }
+                if (obj.seriesId === undefined) { obj.seriesId = null; needsFix = true; }
+                if (needsFix) changed = true;
+                return obj;
+            });
+        });
+        if (changed) saveTasks();
+    })();
+
+    // ============================================================
+    // СОРТИРОВКА (п.1.5, п.10): сначала со временем по возрастанию, потом без времени
+    // ============================================================
+    function sortTasksKey(key) {
+        if (!tasks[key]) return;
+        tasks[key].sort(function(a, b) {
+            if (!a.time && !b.time) return a.created - b.created;
+            if (!a.time) return 1;
+            if (!b.time) return -1;
+            if (a.time === b.time) return a.created - b.created;
+            return a.time.localeCompare(b.time);
+        });
+    }
+
+    function getTasksForDate(date) {
+        let key = getDateKey(date);
+        sortTasksKey(key);
+        return tasks[key] || [];
+    }
+
+    // ============================================================
+    // ПОВТОРЯЮЩИЕСЯ ЗАДАЧИ (п.14)
+    // Упрощение: генерируем несколько независимых экземпляров вперёд
+    // (а не "виртуальную" бесконечную серию), каждый со своим id.
+    // ============================================================
+    function getRepeatDateKeys(startKey, repeat) {
+        let startDate = keyToDateObj(startKey);
+        let keys = [startKey];
+        let count = 1, stepDays = 0, stepMonths = 0, stepYears = 0;
+        if (repeat === 'daily') { count = 14; stepDays = 1; }
+        else if (repeat === 'weekly') { count = 8; stepDays = 7; }
+        else if (repeat === 'monthly') { count = 6; stepMonths = 1; }
+        else if (repeat === 'yearly') { count = 3; stepYears = 1; }
+        else return keys;
+        for (let i = 1; i < count; i++) {
+            let d = new Date(startDate);
+            if (stepDays) d.setDate(d.getDate() + stepDays * i);
+            if (stepMonths) d.setMonth(d.getMonth() + stepMonths * i);
+            if (stepYears) d.setFullYear(d.getFullYear() + stepYears * i);
+            keys.push(getDateKey(d));
         }
-    saveTasks();
+        return keys;
     }
-    
-    function addTaskForDate(date, text, time = null, source = "day") {
-    const key = getDateKey(date);
-    if (!tasks[key]) {
-        tasks[key] = [];
+
+    // ============================================================
+    // CRUD ЗАДАЧ (п.4: удаление/редактирование по id, а не по индексу)
+    // ============================================================
+    function addTask(opts) {
+        let text = (opts.text || '').trim();
+        if (!text) return;
+        let seriesId = (opts.repeat && opts.repeat !== 'none') ? uid() : null;
+        let occurrences = getRepeatDateKeys(opts.dateKey, opts.repeat);
+        occurrences.forEach(function(dk) {
+            if (!tasks[dk]) tasks[dk] = [];
+            tasks[dk].push({
+                id: uid(),
+                text: text,
+                date: dk,
+                time: opts.time || '',
+                created: Date.now(),
+                source: opts.source,
+                category: opts.category || 'other',
+                priority: opts.priority || 'medium',
+                repeat: opts.repeat || 'none',
+                seriesId: seriesId
+            });
+            sortTasksKey(dk);
+        });
+        saveTasks();
     }
-    tasks[key].push({
-        id: Date.now() + Math.random(),
-        text: text.trim(),
-        time: time || "",
-        date: key,
-        source: source,
-        created: Date.now()
-    });
-    sortTasks(key);
-    saveTasks();
+
+    function removeTaskById(dateKey, id) {
+        if (!tasks[dateKey]) return;
+        tasks[dateKey] = tasks[dateKey].filter(function(t) { return t.id !== id; });
+        if (tasks[dateKey].length === 0) delete tasks[dateKey];
+        saveTasks();
     }
-    
-    function sortTasks(key){
-    if(!tasks[key]) return;
-    tasks[key].sort((a,b)=>{
-        if(!a.time && !b.time) return 0;
-        if(!a.time) return 1;
-        if(!b.time) return -1;
-        return a.time.localeCompare(b.time);
-    });
+
+    function editTask(oldDateKey, id, updates) {
+        if (!tasks[oldDateKey]) return;
+        let idx = tasks[oldDateKey].findIndex(function(t) { return t.id === id; });
+        if (idx === -1) return;
+        let original = tasks[oldDateKey][idx];
+        tasks[oldDateKey].splice(idx, 1);
+        if (tasks[oldDateKey].length === 0) delete tasks[oldDateKey];
+        let updated = Object.assign({}, original, updates);
+        let newKey = updated.date;
+        if (!tasks[newKey]) tasks[newKey] = [];
+        tasks[newKey].push(updated);
+        sortTasksKey(newKey);
+        saveTasks();
     }
+
+    function duplicateTask(dateKey, id) {
+        if (!tasks[dateKey]) return;
+        let original = tasks[dateKey].find(function(t) { return t.id === id; });
+        if (!original) return;
+        let copy = Object.assign({}, original, { id: uid(), created: Date.now() });
+        tasks[dateKey].push(copy);
+        sortTasksKey(dateKey);
+        saveTasks();
+    }
+
+    function buildIndicatorDot(color, title) {
+        let dot = document.createElement('span');
+        dot.className = 'indicator-dot';
+        dot.style.background = color;
+        dot.title = title;
+        return dot;
+    }
+
+    // ============================================================
+    // ОБЩАЯ ПЕРЕРИСОВКА (п.2, п.3: MONTH/WEEK обновляются после любого действия)
+    // ============================================================
+    function renderAll() {
+        renderMonth();
+        renderWeek();
+        renderDay();
     }
 
     // ============================================================
@@ -1004,24 +1248,19 @@
 
         let t = getTasksForDate(date);
         let list = document.querySelector('#detailTasks .task-list');
+        list.innerHTML = '';
         if (t.length === 0) {
             list.innerHTML = '<span class="empty-tasks">No tasks</span>';
         } else {
-            list.innerHTML = '';
-            // На вкладке MONTH можно удалить ЛЮБУЮ задачу этого дня —
-            // и добавленную здесь же, и попавшую сюда со вкладки DAY.
-            t.forEach((task, idx) => {
+            t.forEach(function(task) {
                 let span = document.createElement('span');
                 span.className = 'task-item';
-                span.textContent = '★ ' + task.text;
+                span.appendChild(buildIndicatorDot(categoryColors[task.category] || '#999', categoryLabels[task.category] || ''));
+                span.appendChild(buildIndicatorDot(priorityColors[task.priority] || '#999', priorityLabels[task.priority] || ''));
+                span.appendChild(document.createTextNode('★ ' + task.text));
                 span.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    if (confirm('Delete "'+task.text+'"?')) {
-                        removeTaskForDate(date, idx);
-                        renderMonth();
-                        renderWeek();
-                        renderDay();
-                    }
+                    openModal({ mode: 'edit', task: task });
                 });
                 list.appendChild(span);
             });
@@ -1034,7 +1273,7 @@
             e.stopPropagation();
             toggleDropdown(monthTitle, monthNamesFull.map((n,i) => ({
                 label: n,
-                action: function() { currentMonth = i; renderMonth(); renderWeek(); }
+                action: function() { currentMonth = i; renderAll(); }
             })));
         });
         let yearTitle = document.getElementById('yearTitle');
@@ -1042,7 +1281,7 @@
             e.stopPropagation();
             let items = [];
             for (let y=currentYear-3; y<=currentYear+3; y++) {
-                items.push({ label: String(y), action: function() { currentYear = y; renderMonth(); renderWeek(); } });
+                items.push({ label: String(y), action: function() { currentYear = y; renderAll(); } });
             }
             toggleDropdown(yearTitle, items);
         });
@@ -1172,10 +1411,7 @@
             taskCell.innerHTML = '<div class="task-text"><span class="empty-text">No tasks</span></div>';
             schedule.appendChild(taskCell);
         } else {
-            // Каждая задача — своя строка (время | задача). Время берётся
-            // из task.time напрямую, поэтому оно всегда стоит ровно
-            // напротив именно этой задачи, а не первой попавшейся.
-            t.forEach((task, i) => {
+            t.forEach(function(task) {
                 let timeCell = document.createElement('div');
                 timeCell.className = 'cell';
                 if (task.time) {
@@ -1184,34 +1420,26 @@
                     timeSpan.textContent = task.time;
                     timeCell.appendChild(timeSpan);
                 }
+                let dateSpan = document.createElement('span');
+                dateSpan.className = 'date-label';
+                dateSpan.textContent = formatShortDate(keyToDateObj(task.date));
+                timeCell.appendChild(dateSpan);
                 schedule.appendChild(timeCell);
 
                 let taskCell = document.createElement('div');
                 taskCell.className = 'cell';
                 let taskTextWrap = document.createElement('div');
                 taskTextWrap.className = 'task-text';
-                let span = document.createElement('span');
-                span.className = 'task-line';
-                span.textContent = task.text;
+                let line = document.createElement('span');
+                line.className = 'task-line';
+                line.appendChild(buildIndicatorDot(categoryColors[task.category] || '#999', categoryLabels[task.category] || ''));
+                line.appendChild(buildIndicatorDot(priorityColors[task.priority] || '#999', priorityLabels[task.priority] || ''));
+                line.appendChild(document.createTextNode(task.text));
+                line.addEventListener('click', function() {
+                    openModal({ mode: 'edit', task: task });
+                });
 
-                // ДОБАВЛЕНО: удалить со вкладки DAY можно только задачу,
-                // у которой source === 'day'. Задачи с source === 'month'
-                // (попавшие в день со вкладки месяца) здесь не кликабельны —
-                // их можно удалить только на вкладке MONTH.
-                if (task.source === 'day') {
-                    span.addEventListener('click', function() {
-                        if (confirm('Delete "'+task.text+'"?')) {
-                            removeTaskForDate(date, i);
-                            renderDay();
-                            renderMonth();
-                            renderWeek();
-                        }
-                    });
-                } else {
-                    span.classList.add('no-delete');
-                }
-
-                taskTextWrap.appendChild(span);
+                taskTextWrap.appendChild(line);
                 taskCell.appendChild(taskTextWrap);
                 schedule.appendChild(taskCell);
             });
@@ -1268,7 +1496,7 @@
         div.style.overflowY = 'auto';
         div.style.background = '#FDFBF7';
         div.style.border = '1px solid #E35D3B';
-        div.style.zIndex = '9999';
+        div.style.zIndex = '10001';
         div.style.boxShadow = '0 4px 12px rgba(0,0,0,0.12)';
         div.style.webkitOverflowScrolling = 'touch';
         div.style.touchAction = 'pan-y';
@@ -1306,29 +1534,69 @@
     }
 
     // ============================================================
-    // MODAL
+    // MODAL: добавление / редактирование (п.1.2, п.9)
     // ============================================================
 
+    let modalMode = 'add';
     let modalContext = null;
+    let modalSelectedCategory = 'other';
+    let modalSelectedPriority = 'medium';
+    let modalSelectedRepeat = 'none';
 
-    function openModal(context) {
-        modalContext = context;
+    function openModal(opts) {
+        modalMode = opts.mode;
+        let title = document.getElementById('modalTitle');
+        let textInput = document.getElementById('modalTaskText');
+        let dateRow = document.getElementById('modalDateRow');
+        let dateInput = document.getElementById('modalTaskDate');
         let timeToggleRow = document.getElementById('modalTimeToggleRow');
         let timeToggle = document.getElementById('modalTimeToggle');
         let timeInput = document.getElementById('modalTaskTime');
+        let extraButtons = document.getElementById('modalExtraButtons');
+        let saveBtn = document.getElementById('modalSave');
 
-        if (context.type === 'day') {
-            timeToggleRow.style.display = 'flex';
-            timeToggle.checked = false;
-            timeInput.style.display = 'none';
+        if (opts.mode === 'add') {
+            modalContext = { type: opts.type, date: opts.date };
+            title.textContent = 'New Task';
+            textInput.value = '';
+            dateRow.style.display = 'none';
+            extraButtons.style.display = 'none';
+            saveBtn.textContent = 'Add';
+            if (opts.type === 'day') {
+                timeToggleRow.style.display = 'flex';
+                timeToggle.checked = false;
+                timeInput.style.display = 'none';
+            } else {
+                timeToggleRow.style.display = 'none';
+                timeInput.style.display = 'none';
+            }
+            modalSelectedCategory = 'other';
+            modalSelectedPriority = 'medium';
+            modalSelectedRepeat = 'none';
         } else {
-            timeToggleRow.style.display = 'none';
-            timeInput.style.display = 'none';
+            let task = opts.task;
+            modalContext = { task: task };
+            title.textContent = 'Edit Task';
+            textInput.value = task.text;
+            dateRow.style.display = 'flex';
+            dateInput.value = task.date;
+            extraButtons.style.display = 'grid';
+            saveBtn.textContent = 'Save';
+            timeToggleRow.style.display = 'flex';
+            timeToggle.checked = !!task.time;
+            timeInput.style.display = task.time ? 'block' : 'none';
+            if (task.time) timeInput.value = task.time;
+            modalSelectedCategory = task.category || 'other';
+            modalSelectedPriority = task.priority || 'medium';
+            modalSelectedRepeat = task.repeat || 'none';
         }
 
+        document.getElementById('modalCategoryValue').textContent = categoryLabels[modalSelectedCategory];
+        document.getElementById('modalPriorityValue').textContent = priorityLabels[modalSelectedPriority];
+        document.getElementById('modalRepeatValue').textContent = repeatLabels[modalSelectedRepeat];
+
         document.getElementById('modalOverlay').classList.add('show');
-        document.getElementById('modalTaskText').value = '';
-        document.getElementById('modalTaskText').focus();
+        textInput.focus();
     }
 
     function closeModal() {
@@ -1338,6 +1606,28 @@
 
     document.getElementById('modalTimeToggle').addEventListener('change', function() {
         document.getElementById('modalTaskTime').style.display = this.checked ? 'block' : 'none';
+    });
+
+    document.getElementById('modalCategoryValue').addEventListener('click', function(e) {
+        e.stopPropagation();
+        let el = e.currentTarget;
+        toggleDropdown(el, Object.keys(categoryLabels).map(function(k) {
+            return { label: categoryLabels[k], action: function() { modalSelectedCategory = k; el.textContent = categoryLabels[k]; } };
+        }));
+    });
+    document.getElementById('modalPriorityValue').addEventListener('click', function(e) {
+        e.stopPropagation();
+        let el = e.currentTarget;
+        toggleDropdown(el, Object.keys(priorityLabels).map(function(k) {
+            return { label: priorityLabels[k], action: function() { modalSelectedPriority = k; el.textContent = priorityLabels[k]; } };
+        }));
+    });
+    document.getElementById('modalRepeatValue').addEventListener('click', function(e) {
+        e.stopPropagation();
+        let el = e.currentTarget;
+        toggleDropdown(el, Object.keys(repeatLabels).map(function(k) {
+            return { label: repeatLabels[k], action: function() { modalSelectedRepeat = k; el.textContent = repeatLabels[k]; } };
+        }));
     });
 
     document.getElementById('modalCancel').addEventListener('click', closeModal);
@@ -1351,20 +1641,51 @@
             alert('Enter task name');
             return;
         }
-        if (modalContext) {
-            let date = modalContext.date;
-            let time = null;
-            if (modalContext.type === 'day' && document.getElementById('modalTimeToggle').checked) {
-                time = document.getElementById('modalTaskTime').value;
-            }
-            // ДОБАВЛЕНО: source берётся прямо из типа вкладки, с которой открыта
-            // модалка ('day' или 'month') — так задача сразу помечается, откуда она.
-            addTaskForDate(date, text, time, modalContext.type);
-            closeModal();
-            renderMonth();
-            renderWeek();
-            renderDay();
+        let timeChecked = document.getElementById('modalTimeToggle').checked;
+        let timeVal = timeChecked ? document.getElementById('modalTaskTime').value : '';
+
+        if (modalMode === 'add') {
+            addTask({
+                text: text,
+                dateKey: getDateKey(modalContext.date),
+                time: timeVal,
+                source: modalContext.type,
+                category: modalSelectedCategory,
+                priority: modalSelectedPriority,
+                repeat: modalSelectedRepeat
+            });
+        } else {
+            let task = modalContext.task;
+            let newDateKey = document.getElementById('modalTaskDate').value || task.date;
+            editTask(task.date, task.id, {
+                text: text,
+                date: newDateKey,
+                time: timeVal,
+                category: modalSelectedCategory,
+                priority: modalSelectedPriority,
+                repeat: modalSelectedRepeat
+            });
         }
+        closeModal();
+        renderAll();
+    });
+
+    document.getElementById('modalDelete').addEventListener('click', function() {
+        if (modalMode !== 'edit') return;
+        let task = modalContext.task;
+        if (confirm('Delete "'+task.text+'"?')) {
+            removeTaskById(task.date, task.id);
+            closeModal();
+            renderAll();
+        }
+    });
+
+    document.getElementById('modalDuplicate').addEventListener('click', function() {
+        if (modalMode !== 'edit') return;
+        let task = modalContext.task;
+        duplicateTask(task.date, task.id);
+        closeModal();
+        renderAll();
     });
 
     document.getElementById('modalTaskText').addEventListener('keypress', function(e) {
@@ -1374,15 +1695,122 @@
     });
 
     document.getElementById('addTaskMonthBtn').addEventListener('click', function() {
-        openModal({ type: 'month', date: selectedDay });
+        openModal({ mode: 'add', type: 'month', date: selectedDay });
     });
 
     document.getElementById('dayAddBtn').addEventListener('click', function() {
-        openModal({ type: 'day', date: currentDay });
+        openModal({ mode: 'add', type: 'day', date: currentDay });
     });
 
     document.getElementById('dayAddText').addEventListener('click', function() {
-        openModal({ type: 'day', date: currentDay });
+        openModal({ mode: 'add', type: 'day', date: currentDay });
+    });
+
+    // ============================================================
+    // ПОИСК (п.11)
+    // ============================================================
+
+    document.getElementById('searchToggleBtn').addEventListener('click', function() {
+        let wrap = document.getElementById('searchBarWrap');
+        let shown = wrap.style.display !== 'none';
+        wrap.style.display = shown ? 'none' : 'block';
+        document.getElementById('searchResultsWrap').style.display = 'none';
+        if (!shown) document.getElementById('searchInput').focus();
+    });
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+        performSearch(this.value);
+    });
+
+    function performSearch(query) {
+        let resultsWrap = document.getElementById('searchResultsWrap');
+        let resultsEl = document.getElementById('searchResults');
+        resultsEl.innerHTML = '';
+        query = query.trim().toLowerCase();
+        if (!query) { resultsWrap.style.display = 'none'; return; }
+
+        let matches = [];
+        Object.keys(tasks).forEach(function(key) {
+            tasks[key].forEach(function(task) {
+                if (task.text.toLowerCase().includes(query)) matches.push(task);
+            });
+        });
+        matches.sort(function(a, b) {
+            return a.date.localeCompare(b.date) || (a.time||'').localeCompare(b.time||'');
+        });
+
+        if (matches.length === 0) {
+            let empty = document.createElement('div');
+            empty.className = 'cell search-result-row';
+            empty.textContent = 'Ничего не найдено';
+            resultsEl.appendChild(empty);
+        } else {
+            matches.slice(0, 20).forEach(function(task) {
+                let row = document.createElement('div');
+                row.className = 'cell search-result-row';
+                let d = keyToDateObj(task.date);
+                row.textContent = formatShortDate(d) + (task.time ? ' ' + task.time : '') + ' — ' + task.text;
+                row.addEventListener('click', function() {
+                    currentDay = d;
+                    document.querySelectorAll('.bottom-nav .cell[data-nav]').forEach(function(c) { c.classList.remove('active-nav'); });
+                    document.querySelectorAll('.bottom-nav .cell[data-nav="day"]').forEach(function(c) { c.classList.add('active-nav'); });
+                    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+                    document.getElementById('dayPage').classList.add('active');
+                    renderDay();
+                    document.getElementById('searchBarWrap').style.display = 'none';
+                    resultsWrap.style.display = 'none';
+                });
+                resultsEl.appendChild(row);
+            });
+        }
+        resultsWrap.style.display = 'block';
+    }
+
+    // ============================================================
+    // ЭКСПОРТ / ИМПОРТ (п.15)
+    // ============================================================
+
+    document.getElementById('exportBtn').addEventListener('click', function() {
+        let dataStr = JSON.stringify(tasks, null, 2);
+        let blob = new Blob([dataStr], { type: 'application/json' });
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = 'planner-tasks-' + getDateKey(new Date()) + '.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('importBtn').addEventListener('click', function() {
+        document.getElementById('importFileInput').click();
+    });
+
+    document.getElementById('importFileInput').addEventListener('change', function(e) {
+        let file = e.target.files[0];
+        if (!file) return;
+        let reader = new FileReader();
+        reader.onload = function(ev) {
+            try {
+                let imported = JSON.parse(ev.target.result);
+                if (typeof imported !== 'object' || imported === null) throw new Error('bad format');
+                Object.keys(imported).forEach(function(key) {
+                    if (!tasks[key]) tasks[key] = [];
+                    imported[key].forEach(function(t) {
+                        tasks[key].push(Object.assign({}, t, { id: t.id || uid() }));
+                    });
+                    sortTasksKey(key);
+                });
+                saveTasks();
+                renderAll();
+                alert('Импорт завершён');
+            } catch (err) {
+                alert('Ошибка импорта файла');
+            }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
     });
 
     // ============================================================
@@ -1426,34 +1854,29 @@
     // INIT
     // ============================================================
 
-    let today = new Date(2026, 6, 16);
     currentMonth = 6;
     currentYear = 2026;
     selectedDay = new Date(2026, 6, 16);
     currentDay = new Date(2026, 6, 16);
     weekStart = new Date(2026, 6, 13);
 
-    // Тестовые задачи: 13 июля — добавлены "со стороны месяца" (source: 'month'),
-    // 16 июля — добавлены "со стороны дня" (source: 'day'), одна из них со временем.
     let test1 = new Date(2026, 6, 13);
     let test2 = new Date(2026, 6, 16);
     if (!tasks[getDateKey(test1)]) {
-        addTaskForDate(test1, 'MEET WITH FRIED', null, 'month');
-        addTaskForDate(test1, 'GO TO LIBRARY', null, 'month');
-        addTaskForDate(test1, 'MATHS', null, 'month');
-        addTaskForDate(test1, 'PHYSICS', null, 'month');
-        addTaskForDate(test1, 'CHEMISTRY', null, 'month');
-        addTaskForDate(test1, 'BIOLOGY', null, 'month');
+        addTask({ text: 'MEET WITH FRIED', dateKey: getDateKey(test1), time: '', source: 'month', category: 'personal', priority: 'medium', repeat: 'none' });
+        addTask({ text: 'GO TO LIBRARY', dateKey: getDateKey(test1), time: '', source: 'month', category: 'study', priority: 'low', repeat: 'none' });
+        addTask({ text: 'MATHS', dateKey: getDateKey(test1), time: '', source: 'month', category: 'study', priority: 'high', repeat: 'none' });
+        addTask({ text: 'PHYSICS', dateKey: getDateKey(test1), time: '', source: 'month', category: 'study', priority: 'medium', repeat: 'none' });
+        addTask({ text: 'CHEMISTRY', dateKey: getDateKey(test1), time: '', source: 'month', category: 'study', priority: 'medium', repeat: 'none' });
+        addTask({ text: 'BIOLOGY', dateKey: getDateKey(test1), time: '', source: 'month', category: 'study', priority: 'low', repeat: 'none' });
     }
     if (!tasks[getDateKey(test2)]) {
-        addTaskForDate(test2, 'GO TO LIBRARY', '16:30', 'day');
-        addTaskForDate(test2, 'MEET WITH SUPERVISOR', null, 'day');
-        addTaskForDate(test2, 'HW FOR ECONOMICS', null, 'day');
+        addTask({ text: 'GO TO LIBRARY', dateKey: getDateKey(test2), time: '16:30', source: 'day', category: 'study', priority: 'medium', repeat: 'none' });
+        addTask({ text: 'MEET WITH SUPERVISOR', dateKey: getDateKey(test2), time: '', source: 'day', category: 'work', priority: 'high', repeat: 'none' });
+        addTask({ text: 'HW FOR ECONOMICS', dateKey: getDateKey(test2), time: '', source: 'day', category: 'study', priority: 'medium', repeat: 'none' });
     }
 
-    renderMonth();
-    renderWeek();
-    renderDay();
+    renderAll();
 
     console.log('App loaded');
 </script>
