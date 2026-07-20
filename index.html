@@ -876,20 +876,31 @@
     // ИЗМЕНЕНО: теперь принимает source ('day' или 'month') и сохраняет
     // задачу как объект, а не строку. time может быть null/'' — тогда
     // считается, что времени нет.
-    function addTaskForDate(date, text, time, source) {
-        let key = getDateKey(date);
-        if (!tasks[key]) tasks[key] = [];
-        tasks[key].push({ text: text, time: time || null, source: source });
-        saveTasks();
+    function addTaskForDate(date, text, time = null, source = "day") {
+    const key = getDateKey(date);
+    if (!tasks[key]) {
+        tasks[key] = [];
     }
-
-    function removeTaskForDate(date, index) {
-        let key = getDateKey(date);
-        if (tasks[key] && tasks[key][index] !== undefined) {
-            tasks[key].splice(index, 1);
-            if (tasks[key].length === 0) delete tasks[key];
-            saveTasks();
-        }
+    tasks[key].push({
+        id: Date.now() + Math.random(),
+        text: text.trim(),
+        time: time || "",
+        date: key,
+        source: source,
+        created: Date.now()
+    });
+    sortTasks(key);
+    saveTasks();
+    }
+    function sortTasks(key){
+    if(!tasks[key]) return;
+    tasks[key].sort((a,b)=>{
+        if(!a.time && !b.time) return 0;
+        if(!a.time) return 1;
+        if(!b.time) return -1;
+        return a.time.localeCompare(b.time);
+    });
+    }
     }
 
     // ============================================================
