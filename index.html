@@ -237,9 +237,6 @@
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            /* Переключатель MONTH/DAY/WEEK больше не идёт следующей строкой внутри
-               этой таблицы (он переехал в .bottom-nav внизу экрана), поэтому у этой
-               строки убираем нижнюю границу — она теперь последняя в таблице. */
             border-bottom: none;
         }
 
@@ -420,10 +417,6 @@
             color: #2A4B46;
         }
 
-        /* ===== САМАЯ НИЖНЯЯ ТАБЛИЦА (переключатель MONTH / DAY / WEEK) =====
-           Теперь используется одинаково на ВСЕХ трёх вкладках — она "прилипает"
-           (sticky) к низу экрана внутри .page. Если нужно поднять/опустить её
-           относительно низа экрана — меняй bottom: 0 ниже. */
         .bottom-nav {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -485,10 +478,9 @@
         }
 
         /* ===== РАСПИСАНИЕ ДНЯ =====
-           ИЗМЕНЕНО: раньше это была одна большая ячейка со всем временем сразу и
-           отдельная ячейка со всеми задачами списком (время относилось только к
-           первой задаче). Теперь JS строит таблицу построчно: время | задача —
-           и время всегда стоит в одной строке именно со своей задачей. */
+           JS строит таблицу построчно: время | задача — и время всегда
+           стоит в одной строке именно со своей задачей (берётся из поля
+           task.time, а не вычисляется через regex по тексту). */
         .day-schedule {
             display: grid;
             grid-template-columns: 14% 86%;
@@ -509,19 +501,16 @@
             flex-direction: column;
             min-height: 56px;
         }
-        /* Ячейка со временем — 1-я, 3-я, 5-я... ячейка в каждой строке */
         .day-schedule .cell:nth-child(odd) {
             align-items: center;
             justify-content: center;
         }
-        /* Ячейка с текстом задачи — 2-я, 4-я, 6-я... ячейка в каждой строке */
         .day-schedule .cell:nth-child(even) {
             border-right: none;
             align-items: flex-start;
             justify-content: flex-start;
             padding: 14px 6px 14px 15px;
         }
-        /* Убираем нижнюю границу у последней строки (проставляется динамически в JS) */
         .day-schedule .cell.last-row {
             border-bottom: none;
         }
@@ -544,6 +533,15 @@
         }
         .day-schedule .cell .task-text .task-line:active {
             opacity: 0.6;
+        }
+        /* ДОБАВЛЕНО: задачи, добавленные из вкладки MONTH, в дне не удаляются —
+           убираем у них указатель-руку и эффект нажатия, чтобы было видно,
+           что они здесь "только для просмотра" */
+        .day-schedule .cell .task-text .task-line.no-delete {
+            cursor: default;
+        }
+        .day-schedule .cell .task-text .task-line.no-delete:active {
+            opacity: 1;
         }
         .day-schedule .cell .task-text .empty-text {
             opacity: 0.4;
@@ -597,9 +595,6 @@
             border: 1px solid #E35D3B;
             max-height: 200px;
             overflow-y: auto;
-            /* прокрутка списка: плавная инерционная прокрутка на iOS,
-               разрешаем именно вертикальный жест внутри списка и не даём
-               скроллу "утекать" на страницу позади дропдауна */
             -webkit-overflow-scrolling: touch;
             touch-action: pan-y;
             overscroll-behavior: contain;
@@ -671,8 +666,6 @@
             color: #2A4B46;
             opacity: 0.5;
         }
-        /* ДОБАВЛЕНО: строка с галочкой "Указать время" в модальном окне добавления задачи.
-           Показывается только когда добавляешь задачу со вкладки DAY. */
         .modal-checkbox-row {
             display: flex;
             align-items: center;
@@ -724,7 +717,6 @@
     <!-- MONTH -->
     <div class="page active" id="monthPage">
         <div class="page-content">
-            <!-- ВЕРХНИЕ ТАБЛИЦЫ этой вкладки: отступ от края экрана задаётся в CSS-правиле .page (padding-top) -->
             <div class="table-wrap">
                 <div class="month-header table">
                     <div class="cell month-clickable" id="monthTitle">JULY</div>
@@ -763,7 +755,6 @@
                 </div>
             </div>
         </div>
-        <!-- САМАЯ НИЖНЯЯ ТАБЛИЦА (переключатель MONTH/DAY/WEEK) -->
         <div class="bottom-nav table">
             <div class="cell active-nav" data-nav="month">MONTH</div>
             <div class="cell" data-nav="day">DAY</div>
@@ -775,7 +766,6 @@
     <!-- WEEK -->
     <div class="page" id="weekPage">
         <div class="page-content">
-            <!-- ВЕРХНИЕ ТАБЛИЦЫ этой вкладки: отступ от края экрана задаётся в CSS-правиле .page (padding-top) -->
             <div class="table-wrap">
                 <div class="week-header table">
                     <div class="cell clickable" id="weekStart">13</div>
@@ -788,7 +778,6 @@
                 <div class="week-grid table" id="weekGrid"></div>
             </div>
         </div>
-        <!-- САМАЯ НИЖНЯЯ ТАБЛИЦА (переключатель MONTH/DAY/WEEK) -->
         <div class="bottom-nav table">
             <div class="cell" data-nav="month">MONTH</div>
             <div class="cell" data-nav="day">DAY</div>
@@ -800,7 +789,6 @@
     <!-- DAY -->
     <div class="page" id="dayPage">
         <div class="page-content">
-            <!-- ВЕРХНИЕ ТАБЛИЦЫ этой вкладки: отступ от края экрана задаётся в CSS-правиле .page (padding-top) -->
             <div class="table-wrap">
                 <div class="day-header table">
                     <div class="cell clickable" id="dayNumber">16</div>
@@ -809,8 +797,6 @@
                 </div>
             </div>
             <div class="table-wrap">
-                <!-- Расписание дня: JS генерирует пары ячеек (время | задача) построчно,
-                     поэтому время всегда стоит напротив своей же задачи -->
                 <div class="day-schedule table" id="daySchedule">
                     <!-- Заполняется JS в renderDay() -->
                 </div>
@@ -825,7 +811,6 @@
                 </div>
             </div>
         </div>
-        <!-- САМАЯ НИЖНЯЯ ТАБЛИЦА (переключатель MONTH/DAY/WEEK) -->
         <div class="bottom-nav table">
             <div class="cell" data-nav="month">MONTH</div>
             <div class="cell active-nav" data-nav="day">DAY</div>
@@ -840,8 +825,6 @@
     <div class="modal">
         <h3>New Task</h3>
         <input type="text" id="modalTaskText" placeholder="Task name..." />
-        <!-- ДОБАВЛЕНО: галочка "указать время" — видна только для задач со вкладки DAY.
-             Не отмечена — задача добавится без времени. Отмечена — появится выбор времени. -->
         <label class="modal-checkbox-row" id="modalTimeToggleRow">
             <input type="checkbox" id="modalTimeToggle" />
             <span>Указать время</span>
@@ -858,6 +841,10 @@
     // ============================================================
     // DATA
     // ============================================================
+    // ИЗМЕНЕНО: раньше задача хранилась просто строкой ("16:30 TEXT" или "TEXT").
+    // Теперь задача — объект { text, time, source }, где source: 'day' | 'month' —
+    // это и есть информация "откуда добавлена задача", по которой определяется,
+    // можно ли её удалить со вкладки DAY.
 
     let tasks = JSON.parse(localStorage.getItem('plannerTasks')) || {};
     let currentMonth = 6;
@@ -886,11 +873,13 @@
         return tasks[getDateKey(date)] || [];
     }
 
-    function addTaskForDate(date, text, time) {
+    // ИЗМЕНЕНО: теперь принимает source ('day' или 'month') и сохраняет
+    // задачу как объект, а не строку. time может быть null/'' — тогда
+    // считается, что времени нет.
+    function addTaskForDate(date, text, time, source) {
         let key = getDateKey(date);
         if (!tasks[key]) tasks[key] = [];
-        let full = time ? time+' '+text : text;
-        tasks[key].push(full);
+        tasks[key].push({ text: text, time: time || null, source: source });
         saveTasks();
     }
 
@@ -997,14 +986,15 @@
             list.innerHTML = '<span class="empty-tasks">No tasks</span>';
         } else {
             list.innerHTML = '';
+            // На вкладке MONTH можно удалить ЛЮБУЮ задачу этого дня —
+            // и добавленную здесь же, и попавшую сюда со вкладки DAY.
             t.forEach((task, idx) => {
-                let display = task.replace(/^\d{2}:\d{2}\s/, '');
                 let span = document.createElement('span');
                 span.className = 'task-item';
-                span.textContent = '★ ' + display;
+                span.textContent = '★ ' + task.text;
                 span.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    if (confirm('Delete "'+display+'"?')) {
+                    if (confirm('Delete "'+task.text+'"?')) {
                         removeTaskForDate(date, idx);
                         renderMonth();
                         renderWeek();
@@ -1075,17 +1065,15 @@
                 let left = t.slice(0,5);
                 let right = t.slice(5);
                 left.forEach(task => {
-                    let display = task.replace(/^\d{2}:\d{2}\s/, '');
                     let span = document.createElement('span');
                     span.className = 'task-item left';
-                    span.textContent = '★ '+display;
+                    span.textContent = '★ '+task.text;
                     tasksDiv.appendChild(span);
                 });
                 right.forEach(task => {
-                    let display = task.replace(/^\d{2}:\d{2}\s/, '');
                     let span = document.createElement('span');
                     span.className = 'task-item right';
-                    span.textContent = '★ '+display;
+                    span.textContent = '★ '+task.text;
                     tasksDiv.appendChild(span);
                 });
             } else {
@@ -1153,7 +1141,6 @@
         schedule.innerHTML = '';
 
         if (t.length === 0) {
-            // Пустой день: одна строка, время не показываем
             let timeCell = document.createElement('div');
             timeCell.className = 'cell last-row';
             schedule.appendChild(timeCell);
@@ -1163,21 +1150,16 @@
             taskCell.innerHTML = '<div class="task-text"><span class="empty-text">No tasks</span></div>';
             schedule.appendChild(taskCell);
         } else {
-            // ИЗМЕНЕНО: раньше время показывалось только у первой найденной задачи
-            // в отдельной ячейке слева, общей для всех. Теперь для каждой задачи
-            // строится своя строка (время | задача), и время видно именно там,
-            // где оно относится к своей же задаче.
+            // Каждая задача — своя строка (время | задача). Время берётся
+            // из task.time напрямую, поэтому оно всегда стоит ровно
+            // напротив именно этой задачи, а не первой попавшейся.
             t.forEach((task, i) => {
-                let match = task.match(/^(\d{2}:\d{2})\s(.+)/);
-                let timeText = match ? match[1] : '';
-                let displayText = match ? match[2] : task;
-
                 let timeCell = document.createElement('div');
                 timeCell.className = 'cell';
-                if (timeText) {
+                if (task.time) {
                     let timeSpan = document.createElement('span');
                     timeSpan.className = 'time-label';
-                    timeSpan.textContent = timeText;
+                    timeSpan.textContent = task.time;
                     timeCell.appendChild(timeSpan);
                 }
                 schedule.appendChild(timeCell);
@@ -1188,29 +1170,30 @@
                 taskTextWrap.className = 'task-text';
                 let span = document.createElement('span');
                 span.className = 'task-line';
-                span.textContent = displayText;
+                span.textContent = task.text;
 
-                // ИСПРАВЛЕНО (удаление задач): раньше нужный индекс для удаления
-                // искали по совпадению текста задачи, из-за чего при одинаковых
-                // названиях у задачи с месяца и задачи с дня можно было удалить
-                // не ту запись. Порядок строк на экране всегда совпадает с
-                // порядком хранения задач в массиве, поэтому используем индекс i
-                // напрямую — это надёжно работает для задач из любой вкладки.
-                span.addEventListener('click', function() {
-                    if (confirm('Delete "'+displayText+'"?')) {
-                        removeTaskForDate(date, i);
-                        renderDay();
-                        renderMonth();
-                        renderWeek();
-                    }
-                });
+                // ДОБАВЛЕНО: удалить со вкладки DAY можно только задачу,
+                // у которой source === 'day'. Задачи с source === 'month'
+                // (попавшие в день со вкладки месяца) здесь не кликабельны —
+                // их можно удалить только на вкладке MONTH.
+                if (task.source === 'day') {
+                    span.addEventListener('click', function() {
+                        if (confirm('Delete "'+task.text+'"?')) {
+                            removeTaskForDate(date, i);
+                            renderDay();
+                            renderMonth();
+                            renderWeek();
+                        }
+                    });
+                } else {
+                    span.classList.add('no-delete');
+                }
 
                 taskTextWrap.appendChild(span);
                 taskCell.appendChild(taskTextWrap);
                 schedule.appendChild(taskCell);
             });
 
-            // Убираем нижнюю границу у последней строки (последние 2 ячейки)
             let cells = schedule.children;
             cells[cells.length-1].classList.add('last-row');
             cells[cells.length-2].classList.add('last-row');
@@ -1313,13 +1296,10 @@
         let timeInput = document.getElementById('modalTaskTime');
 
         if (context.type === 'day') {
-            // ДОБАВЛЕНО: для вкладки DAY показываем галочку "Указать время";
-            // сам инпут времени виден только если галочка отмечена
             timeToggleRow.style.display = 'flex';
             timeToggle.checked = false;
             timeInput.style.display = 'none';
         } else {
-            // Задачи со вкладки MONTH всегда без времени — галочку и поле времени скрываем
             timeToggleRow.style.display = 'none';
             timeInput.style.display = 'none';
         }
@@ -1351,13 +1331,13 @@
         }
         if (modalContext) {
             let date = modalContext.date;
-            // ДОБАВЛЕНО: время добавляется только если это вкладка DAY и галочка отмечена.
-            // Иначе (в т.ч. всегда для MONTH) — задача добавляется без времени.
             let time = null;
             if (modalContext.type === 'day' && document.getElementById('modalTimeToggle').checked) {
                 time = document.getElementById('modalTaskTime').value;
             }
-            addTaskForDate(date, text, time);
+            // ДОБАВЛЕНО: source берётся прямо из типа вкладки, с которой открыта
+            // модалка ('day' или 'month') — так задача сразу помечается, откуда она.
+            addTaskForDate(date, text, time, modalContext.type);
             closeModal();
             renderMonth();
             renderWeek();
@@ -1431,21 +1411,22 @@
     currentDay = new Date(2026, 6, 16);
     weekStart = new Date(2026, 6, 13);
 
-    // Добавляем тестовые задачи
+    // Тестовые задачи: 13 июля — добавлены "со стороны месяца" (source: 'month'),
+    // 16 июля — добавлены "со стороны дня" (source: 'day'), одна из них со временем.
     let test1 = new Date(2026, 6, 13);
     let test2 = new Date(2026, 6, 16);
     if (!tasks[getDateKey(test1)]) {
-        addTaskForDate(test1, 'MEET WITH FRIED', '');
-        addTaskForDate(test1, 'GO TO LIBRARY', '');
-        addTaskForDate(test1, 'MATHS', '');
-        addTaskForDate(test1, 'PHYSICS', '');
-        addTaskForDate(test1, 'CHEMISTRY', '');
-        addTaskForDate(test1, 'BIOLOGY', '');
+        addTaskForDate(test1, 'MEET WITH FRIED', null, 'month');
+        addTaskForDate(test1, 'GO TO LIBRARY', null, 'month');
+        addTaskForDate(test1, 'MATHS', null, 'month');
+        addTaskForDate(test1, 'PHYSICS', null, 'month');
+        addTaskForDate(test1, 'CHEMISTRY', null, 'month');
+        addTaskForDate(test1, 'BIOLOGY', null, 'month');
     }
     if (!tasks[getDateKey(test2)]) {
-        addTaskForDate(test2, 'GO TO LIBRARY', '16:30');
-        addTaskForDate(test2, 'MEET WITH SUPERVISOR', '');
-        addTaskForDate(test2, 'HW FOR ECONOMICS', '');
+        addTaskForDate(test2, 'GO TO LIBRARY', '16:30', 'day');
+        addTaskForDate(test2, 'MEET WITH SUPERVISOR', null, 'day');
+        addTaskForDate(test2, 'HW FOR ECONOMICS', null, 'day');
     }
 
     renderMonth();
