@@ -1,5 +1,5 @@
-const CACHE_NAME = "planner-v2";
-
+const CACHE_VERSION = "v3";
+const CACHE_NAME = "planner-" + CACHE_VERSION;
 const urlsToCache = [
     "./",
     "./index.html",
@@ -7,6 +7,7 @@ const urlsToCache = [
 ];
 
 self.addEventListener("install", event => {
+    self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
     );
@@ -22,14 +23,21 @@ self.addEventListener("activate", event => {
                     }
                 })
             )
-        )
+        ).then(() => self.clients.claim())
     );
 });
 
 self.addEventListener("fetch", event => {
+    if (event.request.method !== "GET") return;
     event.respondWith(
-        caches.match(event.request).then(response => {
-            return response || fetch(event.request);
-        })
+        fetch(event.request)
+            .then(response => {
+                const copy = response.clone();
+                caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+                return response;
+            })
+            .catch(() =>
+                caches.match(event.request).then(cached => cached || caches.match("./index.html"))
+            )
     );
 });
